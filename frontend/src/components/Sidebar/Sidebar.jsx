@@ -76,10 +76,14 @@ const Sidebar = () => {
       {/* settings */}
 
       <div className="mt-auto p-4  border-slate-800">
-        <li className="flex items-center w-full gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
-          <FiSettings size={22} />
-          Settings
+        <ul>
+          <li>
+          <NavLink to="/settings" className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
+            <FiSettings size={22} />
+            Settings
+          </NavLink>
         </li>
+        </ul>
       </div>
 
       {/* profile */}
@@ -93,7 +97,7 @@ const Sidebar = () => {
           />
 
           <div className="">
-            <h3 className="text-base font-semibold text-white">Alex Chen</h3>
+            <h3 className="text-base font-semibold text-white">Kush Bhardwaj</h3>
             <p className="text-sm text-slate-400">Free</p>
           </div>
         </div>
