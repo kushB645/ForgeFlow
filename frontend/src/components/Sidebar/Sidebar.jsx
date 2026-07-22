@@ -1,17 +1,18 @@
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/logo.png";
-import {
-  FiGrid,
-  FiHome,
-  FiPlusSquare,
-  FiFolder,
-  FiCalendar,
-  FiSettings,
-} from "react-icons/fi";
+import {FiGrid,FiHome,FiPlusSquare,FiFolder,FiCalendar,FiSettings,FiEdit3} from "react-icons/fi";
+import Workspace from "../../pages/Workspace/Workspace";
+import NewPost from "../../pages/Newpost/NewPost";
+import CustomPost from "../../pages/Custompost/CustomPost";
+import ContentLibrary from "../../pages/ContentLibrary/ContentLibrary";
+import Schedule from "../../pages/Schedule/Schedule";
+import Settings from "../../pages/Setting/Settings";
+
+
 
 const Sidebar = () => {
   return (
-    <aside className="w-64 h-screen bg-[#0F172A] border-r border-slate-800 flex flex-col">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col">
       {/* logo */}
 
       <div className="flex items-center gap-3 px-3 py-4">
@@ -34,29 +35,40 @@ const Sidebar = () => {
 
       <nav className="mt-8 px-3">
         <ul className="space-y-2 ">
-          <li className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
-            <FiGrid size={22} />
-            Workspace
+          <li>
+            <NavLink to="/workspace" className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
+              <FiGrid size={22} />
+              Workspace
+            </NavLink>
           </li>
 
-          <li className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
-            <FiHome size={22} />
-            Dashboard
-          </li>
-
-          <li className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
+          <li >
+            <NavLink to="/new-post" className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
             <FiPlusSquare size={22} />
-            New Post
+            New Post 
+            </NavLink>
           </li>
 
-          <li className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
-            <FiFolder size={22} />
-            Content Library
+          <li >
+            <NavLink to="/custom-post" className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
+            <FiEdit3 size={22} />
+            Custom Post
+            </NavLink>
           </li>
 
-          <li className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
-            <FiCalendar size={22} />
-            Schedule
+          <li >
+            <NavLink to="/content-library" className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
+              <FiFolder size={22} />
+              Content Library
+            </NavLink>
+          </li>
+
+          <li >
+            <NavLink to="/schedule" className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800">
+              <FiCalendar size={22} />
+              Schedule
+            </NavLink>
+            
           </li>
         </ul>
       </nav>
