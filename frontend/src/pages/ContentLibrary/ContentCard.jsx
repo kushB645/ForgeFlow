@@ -8,14 +8,11 @@ import {
 } from "react-icons/fi";
 
 const statusStyles = {
-  Published:
-    "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+  Published: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
 
-  Draft:
-    "bg-slate-700/60 text-slate-300 border border-slate-600",
+  Draft: "bg-slate-700/60 text-slate-300 border border-slate-600",
 
-  Scheduled:
-    "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20",
+  Scheduled: "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20",
 };
 
 const ContentCard = ({ post }) => {
@@ -43,9 +40,7 @@ const ContentCard = ({ post }) => {
           {post.status}
         </span>
 
-        <span className="text-sm text-slate-400">
-          {post.date}
-        </span>
+        <span className="text-sm text-slate-400">{post.date}</span>
       </div>
 
       {/* Thumbnail */}

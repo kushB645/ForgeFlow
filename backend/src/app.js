@@ -1,0 +1,14 @@
+const express = require("express");
+
+const app = express();
+
+app.get("/", (req, res) => {
+
+    res.send("ForgeFlow api is running...");
+
+});
+
+app.use("/api/v1/posts", require("./routes/post.routes"));
+
+
+module.exports = app;
