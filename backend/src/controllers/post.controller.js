@@ -13,6 +13,4 @@ const getAllPosts = (req, res) => {
   res.json(posts);
 };
 
-module.exports = {
-  getAllPosts,
-};
+export { getAllPosts };
