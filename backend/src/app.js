@@ -4,6 +4,10 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
+app.get("/", (req, res) => {
+  res.send("ForgeFlow API is running...");
+});
+
 app.use(cors({
     origin: process.env.CROS_ORIGIN,
     credentials: true
