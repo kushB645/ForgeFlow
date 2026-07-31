@@ -3,13 +3,6 @@ import { Schema } from "mongoose";
 
 const postSchema = new Schema(
   {
-    title: {
-      type: String,
-      required: [true, "Post title is required"],
-      trim: true,
-      index: true,
-    },
-
     content: {
       type: String,
       required: [true, "Post content is required"],
@@ -47,6 +40,11 @@ const postSchema = new Schema(
 
     scheduledAt: {
       type: Date,
+    },
+
+    linkedinPostId: {
+      type: String,
+      default: null,
     },
 
     aiGenerated: {

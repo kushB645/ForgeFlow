@@ -21,12 +21,15 @@ const uploadOnCloudinary = async (localFilePath) => {
       resource_type: "auto",
     });
 
-    //console.log("File uploaded successfully:", response.secure_url);
+    console.log("Deleting:", absolutePath);
+    console.log("Exists Before:", fs.existsSync(absolutePath));
 
     // Remove file from local storage after successful upload
     if (fs.existsSync(absolutePath)) {
       fs.unlinkSync(absolutePath);
     }
+
+    console.log("Exists After:", fs.existsSync(absolutePath));
 
     return response;
   } catch (error) {
