@@ -1,8 +1,8 @@
 import { Worker } from "bullmq";
 import connection from "./connection.js";
 
-import Post from "../models/post.model.js";
-import LinkedInAccount from "../models/linkedinAccount.model.js";
+import {Post} from "../models/post.model.js";
+import {LinkedInAccount} from "../models/linkedinAccount.model.js";
 
 import { publishToLinkedIn } from "../services/linkedin.service.js";
 
