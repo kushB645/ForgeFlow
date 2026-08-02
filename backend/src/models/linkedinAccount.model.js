@@ -1,19 +1,19 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
-import { User } from "./user.model";
 
 const linkedinAccountSchema = new Schema({
 
     owner: {
         type: Schema.Types.ObjectId,
         ref: "User",
-        require: true,
+        required: true,
         unique: true
     },
 
     linkedinId: {
         type: String,
         required: true,
+        unique: true,
     },
 
     accessToken: {

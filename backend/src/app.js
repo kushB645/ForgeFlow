@@ -24,10 +24,12 @@ app.use(cookieParser())
 //routes import 
 
 import userRouter from "./routes/user.routes.js"
+import linkedinRouter from "./routes/linkedin.routes.js";
 
 //routes declartion 
 
 app.use("/api/v1/users", userRouter)
+app.use("/api/v1/linkedin", linkedinRouter);
 
 //this will create url like http://localhost:8000/api/v1/users/register or what ever 
 //this will give control to the user.routes
