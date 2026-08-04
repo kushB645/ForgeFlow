@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^2.15.0",
     "axios": "^1.19.0",
     "bcrypt": "^6.0.0",
     "bullmq": "^6.0.5",

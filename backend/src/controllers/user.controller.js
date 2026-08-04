@@ -203,6 +203,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 //refresh access token
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
+
   console.log("Cookies:", req.cookies);
 console.log("Body:", req.body);
   const incomingRefreshToken =
@@ -259,4 +260,137 @@ console.log("Body:", req.body);
   }
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+const getCurrentUser = asyncHandler(async (req, res) => {
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      req.user,
+      "Current user fetched successfully"
+    )
+  );
+});
+
+const updateProfile = asyncHandler(async (req, res) => {
+  const { fullName, username } = req.body;
+
+  // Validate
+  if (!fullName || !username) {
+    throw new ApiError(400, "Full name and username are required");
+  }
+
+  const normalizedUsername = username.toLowerCase();
+
+  // Check if username already exists
+  const existingUser = await User.findOne({
+    username: normalizedUsername,
+    _id: { $ne: req.user._id }, // Ignore current user
+  });
+
+  if (existingUser) {
+    throw new ApiError(409, "Username already exists");
+  }
+
+  // Update user
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      fullName,
+      username: normalizedUsername,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  ).select("-password -refreshToken");
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      updatedUser,
+      "Profile updated successfully"
+    )
+  );
+});
+
+const updateAvatar = asyncHandler(async (req, res) => {
+  // Check file
+  const avatarLocalPath = req.file?.path;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar file is required");
+  }
+
+  // Upload to Cloudinary
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!avatar) {
+    throw new ApiError(500, "Error uploading avatar");
+  }
+
+  // Update database
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      avatar: avatar.url,
+    },
+    {
+      new: true,
+    }
+  ).select("-password -refreshToken");
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      updatedUser,
+      "Avatar updated successfully"
+    )
+  );
+});
+
+const changePassword = asyncHandler(async (req, res) => {
+
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword || !newPassword) {
+    throw new ApiError(400, "Both passwords are required");
+  }
+
+  const user = await User.findById(req.user._id);
+
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Current password is incorrect");
+  }
+
+  if (
+    !validator.isStrongPassword(newPassword, {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+    })
+  ) {
+    throw new ApiError(
+      400,
+      "Password must contain uppercase, lowercase, number and symbol."
+    );
+  }
+
+  user.password = newPassword;
+
+  await user.save();
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Password changed successfully"
+      )
+    );
+});
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, getCurrentUser, updateProfile,updateAvatar, changePassword };

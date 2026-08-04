@@ -1,7 +1,12 @@
 import { HiSparkles } from "react-icons/hi2";
 import { FiTag, FiPlus } from "react-icons/fi";
 
-const PostStudio = () => {
+const PostStudio = ({
+  formData,
+  setFormData,
+  handleGenerate,
+  loading,
+}) => {
   return (
     <section className="flex h-[calc(116vh-170px)] flex-col rounded-2xl border border-slate-800 bg-[#101827] shadow-lg">
       {/* Header */}
@@ -30,6 +35,13 @@ const PostStudio = () => {
 
           <input
             type="text"
+            value={formData.topic}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                topic: e.target.value,
+              }))
+            }
             placeholder="e.g. Mastering React Context API"
             className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none"
           />
@@ -40,7 +52,16 @@ const PostStudio = () => {
           <div>
             <label className="mb-2 block text-sm text-slate-300">Tone</label>
 
-            <select className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-indigo-500 focus:outline-none">
+            <select
+              value={formData.tone}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  tone: e.target.value,
+                }))
+              }
+              className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-indigo-500 focus:outline-none text-xs"
+            >
               <option>Professional</option>
               <option>Educational</option>
               <option>Storytelling</option>
@@ -53,7 +74,16 @@ const PostStudio = () => {
               Audience
             </label>
 
-            <select className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-indigo-500 focus:outline-none">
+            <select
+              value={formData.audience}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  audience: e.target.value,
+                }))
+              }
+              className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-indigo-500 focus:outline-none text-xs"
+            >
               <option>Developers</option>
               <option>Recruiters</option>
               <option>Students</option>
@@ -64,7 +94,16 @@ const PostStudio = () => {
           <div>
             <label className="mb-2 block text-sm text-slate-300">Length</label>
 
-            <select className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-indigo-500 focus:outline-none">
+            <select
+              value={formData.length}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  length: e.target.value,
+                }))
+              }
+              className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-indigo-500 focus:outline-none text-xs"
+            >
               <option>Short</option>
               <option>Medium</option>
               <option>Long</option>
@@ -73,29 +112,40 @@ const PostStudio = () => {
         </div>
 
         {/* Tags */}
+        {/* Hashtags */}
         <div className="mb-6">
-          <label className="mb-3 block text-sm font-medium text-slate-300">
-            Tags
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Hashtags
           </label>
 
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs text-indigo-300">
-              #react
-            </span>
+          <input
+            type="text"
+            value={formData.hashtags.join(", ")}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                hashtags: e.target.value
+                  .split(",")
+                  .map((tag) => tag.trim().replace(/^#/, ""))
+                  .filter(Boolean),
+              }))
+            }
+            placeholder="react, javascript, frontend"
+            className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none"
+          />
 
-            <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs text-indigo-300">
-              #frontend
-            </span>
-
-            <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs text-indigo-300">
-              #javascript
-            </span>
-
-            <button className="flex items-center gap-1 rounded-full border border-dashed border-slate-600 px-3 py-1 text-xs text-slate-400 hover:border-indigo-500 hover:text-indigo-400">
-              <FiPlus size={12} />
-              Add Tag
-            </button>
-          </div>
+          {formData.hashtags.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {formData.hashtags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs text-indigo-300"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Instructions */}
@@ -106,6 +156,13 @@ const PostStudio = () => {
 
           <textarea
             rows={5}
+            value={formData.instructions}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                instructions: e.target.value,
+              }))
+            }
             placeholder="Mention Context API, keep it beginner friendly and end with a question..."
             className="w-full resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none"
           />
@@ -129,8 +186,24 @@ const PostStudio = () => {
               Drag & Drop or Click to Browse
             </p>
 
-            <input id="image" type="file" accept="image/*" className="hidden" />
+            <input
+              id="image"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  media: e.target.files[0],
+                }))
+              }
+            />
           </label>
+          {formData.media && (
+            <p className="mt-3 text-center text-sm text-cyan-400">
+              {formData.media.name}
+            </p>
+          )}
         </div>
 
         {/* Quick Options */}

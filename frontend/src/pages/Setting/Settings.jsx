@@ -20,9 +20,7 @@ const Settings = () => {
           Preferences
         </span>
 
-        <h1 className="mt-5 text-5xl font-bold text-white">
-          Settings
-        </h1>
+        <h1 className="mt-5 text-5xl font-bold text-white">Settings</h1>
 
         <p className="mt-3 max-w-2xl text-lg text-slate-400">
           Manage your account, AI preferences, integrations and workspace
@@ -35,7 +33,12 @@ const Settings = () => {
 
       {/* Grid */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <IntegrationCard />
+        <IntegrationCard
+          connected={true}
+          account="@kushbhardwajdev"
+          profileUrl="https://linkedin.com/in/kushbhardwajdev"
+          lastSync="2 hours ago"
+        />
 
         <SettingCard
           icon={<FiCpu />}
@@ -93,25 +96,16 @@ const Settings = () => {
           icon={<FiUser />}
           title="Account"
           description="Manage your personal information."
-          items={[
-            "Update Email",
-            "Change Username",
-            "Language",
-            "Timezone",
-          ]}
+          items={["Update Email", "Change Username", "Language", "Timezone"]}
           buttonText="Edit Account"
         />
       </div>
 
       {/* Danger Zone */}
       <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6">
-        <h2 className="text-xl font-bold text-red-400">
-          Danger Zone
-        </h2>
+        <h2 className="text-xl font-bold text-red-400">Danger Zone</h2>
 
-        <p className="mt-2 text-slate-400">
-          These actions cannot be undone.
-        </p>
+        <p className="mt-2 text-slate-400">These actions cannot be undone.</p>
 
         <div className="mt-6 flex gap-4">
           <button className="rounded-xl border border-red-500/30 px-5 py-3 text-red-400 transition hover:bg-red-500/10">

@@ -1,40 +1,43 @@
 import { FiEdit2, FiMail, FiMapPin, FiCalendar } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
 
 const ProfileCard = () => {
+  const { user } = useAuth();
+
   return (
     <div className="rounded-2xl border border-slate-800 bg-[#101827] p-8">
       <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
         {/* Left */}
         <div className="flex items-center gap-6">
           {/* Avatar */}
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 text-3xl font-bold text-white shadow-lg">
-            KB
-          </div>
+          <img
+            src={user?.avatar || "https://res.cloudinary.com/dbszrqojn/image/upload/v1785848370/download_yelfn0.jpg"}
+            alt="avatar"
+            className="h-24 w-24 rounded-full object-cover"
+          />
 
           {/* Info */}
           <div>
-            <h2 className="text-3xl font-bold text-white">
-              Kush Bhardwaj
-            </h2>
+            <h2 className="text-3xl font-bold text-white">{user?.fullName}</h2>
 
             <p className="mt-2 text-slate-400">
-              Frontend Developer • AI Content Creator
+              @{user?.username}
             </p>
 
             <div className="mt-5 flex flex-wrap gap-6 text-sm text-slate-400">
               <div className="flex items-center gap-2">
                 <FiMail className="text-cyan-400" />
-                kush@example.com
+                {user?.email}
               </div>
 
               <div className="flex items-center gap-2">
                 <FiMapPin className="text-cyan-400" />
-                Ghaziabad, India
+                {user?.location || "Member"}
               </div>
 
               <div className="flex items-center gap-2">
                 <FiCalendar className="text-cyan-400" />
-                Joined July 2026
+                {user?.memberSince || "ForgeFlow User"}
               </div>
             </div>
           </div>

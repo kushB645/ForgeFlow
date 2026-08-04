@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   FiCalendar,
   FiClock,
@@ -9,6 +9,13 @@ import {
   FiTag,
   FiPlus,
 } from "react-icons/fi";
+import {
+  getDashboardStats,
+  getUpcomingPosts,
+  getRecentPosts,
+} from "../../services/dashboard.service.js";
+import StatCard from "../../components/Card/StatCard";
+
 import { HiMiniChartBar } from "react-icons/hi2";
 
 import { HiSparkles, HiOutlinePencilSquare } from "react-icons/hi2";
@@ -16,6 +23,40 @@ import future_of_generative_ui from "../../assets/future_of_generative_ui.jpg";
 import mastering_the_fluid_grid from "../../assets/mastering_the_fluid_grid.jpg";
 
 const Workspace = () => {
+  const [stats, setStats] = useState({
+    totalPosts: 0,
+    draft: 0,
+    scheduled: 0,
+    published: 0,
+    failed: 0,
+  });
+
+  const [upcomingPosts, setUpcomingPosts] = useState([]);
+  const [recentPosts, setRecentPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const [statsData, upcomingData, recentData] = await Promise.all([
+          getDashboardStats(),
+          getUpcomingPosts(),
+          getRecentPosts(),
+        ]);
+
+        setStats(statsData);
+        setUpcomingPosts(upcomingData);
+        setRecentPosts(recentData);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
   return (
     <div className="space-y-10">
       {/* Hero */}
@@ -32,9 +73,14 @@ const Workspace = () => {
           precision or craft every pixel manually.
         </p>
       </section>
-
-      {/* Quick Actions */}
-
+      <div className="grid grid-cols-5 gap-5">
+        <StatCard title="Total Posts" value={stats.totalPosts} />
+        <StatCard title="Drafts" value={stats.draft} />
+        <StatCard title="Scheduled" value={stats.scheduled} />
+        <StatCard title="Published" value={stats.published} />
+        <StatCard title="Failed" value={stats.failed} />
+      </div>
+      ;{/* Quick Actions */}
       <section className="mt-16 grid grid-cols-2 gap-8">
         <div className="flex flex-col border border-slate-600 rounded-2xl bg-slate-900 backdrop-blur-2xl p-8">
           <div className="h-16 w-16 mt-4 mb-2 rounded-lg bg-slate-800 flex items-center justify-center">
@@ -71,9 +117,7 @@ const Workspace = () => {
           </h1>
         </div>
       </section>
-
       {/* Drafts + Schedule */}
-
       <section className="mt-16 grid grid-cols-3 gap-8">
         {/* ================= Recent Drafts ================= */}
 
@@ -239,7 +283,6 @@ const Workspace = () => {
 
         {/* Cards will come here */}
       </section>
-
       {/* Analytics */}
       <section className="mt-14">
         <div className="flex items-center justify-between rounded-2xl border border-slate-800 bg-[#101827] px-8 py-6 transition-all duration-300 hover:border-slate-600 hover:bg-[#121C2D]">

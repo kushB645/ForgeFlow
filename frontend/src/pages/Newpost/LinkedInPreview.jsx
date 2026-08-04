@@ -6,8 +6,22 @@ import {
   FiSend,
 } from "react-icons/fi";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
-const LinkedInPreview = () => {
+const LinkedInPreview = ({ formData }) => {
+  const [previewUrl, setPreviewUrl] = useState("");
+
+  useEffect(() => {
+    if (!formData.media) {
+      setPreviewUrl("");
+      return;
+    }
+
+    const url = URL.createObjectURL(formData.media);
+    setPreviewUrl(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [formData.media]);
   return (
     <section className="sticky top-24 rounded-2xl border border-slate-800 bg-[#101827] shadow-lg">
       {/* Header */}
@@ -50,36 +64,23 @@ const LinkedInPreview = () => {
           <div className="relative">
             <div className="h-[330px] overflow-y-auto scrollbar-hide px-5 py-5">
               <div className="space-y-6">
-                <p className="leading-7 text-slate-200">
-                  🚀 React Context API completely changed the way I manage state
-                  in React.
+                {previewUrl && (
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="mt-5 w-full rounded-xl"
+                  />
+                )}
+                <p className="whitespace-pre-wrap leading-7 text-slate-200">
+                  {formData.content ||
+                    "Your generated LinkedIn post will appear here..."}
                 </p>
 
-                <p className="leading-7 text-slate-300">
-                  Instead of passing props through multiple levels, Context lets
-                  components access shared data directly.
-                </p>
-
-                <p className="leading-7 text-slate-300">
-                  While it's powerful, it's also important not to overuse
-                  Context. For large applications, combining Context with custom
-                  hooks or state management libraries can produce a cleaner
-                  architecture.
-                </p>
-
-                <p className="leading-7 text-slate-300">
-                  Learning when to use Context—and when not to—is what separates
-                  beginners from experienced React developers.
-                </p>
-
-                <p className="leading-7 text-slate-300">
-                  Small improvements in architecture today can save hours of
-                  debugging tomorrow.
-                </p>
-
-                <p className="text-[#0A66C2]">
-                  #react #frontend #javascript #webdevelopment #100DaysOfCode
-                </p>
+                {formData.hashtags.length > 0 && (
+                  <p className="text-[#0A66C2]">
+                    {formData.hashtags.map((tag) => `#${tag}`).join(" ")}
+                  </p>
+                )}
               </div>
             </div>
           </div>

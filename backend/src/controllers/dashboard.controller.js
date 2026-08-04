@@ -35,13 +35,61 @@ const getDashboardStats = asyncHandler(async (req, res) => {
     dashboard.totalPosts += item.count;
   });
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      dashboard,
-      "Dashboard statistics fetched successfully"
-    )
-  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        dashboard,
+        "Dashboard statistics fetched successfully"
+      )
+    );
 });
 
-export default getDashboardStats ;
+const getUpcomingPosts = asyncHandler(async (req, res) => {
+  // Find upcoming scheduled posts of current user
+  const upcomingPosts = await Post.find({
+    user: req.user._id,
+    status: "scheduled",
+    scheduledAt: {
+      $gte: new Date(),
+    },
+  })
+    .sort({ scheduledAt: 1 }) // nearest post first
+    .limit(5) // only next 5 posts
+    .select("content scheduledAt status media");
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        upcomingPosts,
+        "Upcoming scheduled posts fetched successfully"
+      )
+    );
+});
+
+const getRecentPosts = asyncHandler(async (req, res) => {
+  //  Find upcoming scheduled posts of current user
+
+  const recentPosts = await Post.find({
+    user: req.user._id,
+    status: "published",
+  })
+    .sort({ createdAt: -1 }) // nearest post first
+    .limit(5) // only next 5 posts
+    .select("content status publishedAt media")
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        recentPosts,
+        "Recent posts fetched successfully"
+      )
+    );
+});
+
+export { getDashboardStats, getUpcomingPosts, getRecentPosts };

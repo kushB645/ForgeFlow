@@ -12,7 +12,19 @@ import {
 const createPost = asyncHandler(async (req, res) => {
   //data from req.body
 
-  const { content, hashtags } = req.body;
+  const { content } = req.body;
+
+  const hashtags = Array.isArray(req.body.hashtags)
+    ? req.body.hashtags
+        .flatMap((tag) => tag.split(","))
+        .map((tag) => tag.trim().replace(/^#/, ""))
+        .filter(Boolean)
+    : req.body.hashtags
+      ? req.body.hashtags
+          .split(",")
+          .map((tag) => tag.trim().replace(/^#/, ""))
+          .filter(Boolean)
+      : [];
 
   // verifying the data
   if (!content?.trim()) {
@@ -64,13 +76,47 @@ const createPost = asyncHandler(async (req, res) => {
 //get all post
 
 const getAllPost = asyncHandler(async (req, res) => {
-  const user = req.user._id;
+  const { page = 1, limit = 10, status, search = "" } = req.query;
 
-  const posts = await Post.find({ user }).sort({ createdAt: -1 }); // Sort posts by (latest posts first)
+  const query = {
+    user: req.user._id,
+  };
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, posts, "Post feteched successfully"));
+  // Filter by status
+  if (status && status !== "all") {
+    query.status = status;
+  }
+
+  // Search by content
+  if (search.trim()) {
+    query.content = {
+      $regex: search,
+      $options: "i",
+    };
+  }
+
+  const totalPosts = await Post.countDocuments(query);
+
+  const posts = await Post.find(query)
+    .sort({ createdAt: -1 })
+    .skip((Number(page) - 1) * Number(limit))
+    .limit(Number(limit));
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        posts,
+        pagination: {
+          totalPosts,
+          currentPage: Number(page),
+          totalPages: Math.ceil(totalPosts / Number(limit)),
+          limit: Number(limit),
+        },
+      },
+      "Posts fetched successfully"
+    )
+  );
 });
 
 //editing post
@@ -107,7 +153,15 @@ const updatePost = asyncHandler(async (req, res) => {
   }
 
   if (hashtags) {
-    post.hashtags = hashtags;
+    post.hashtags = Array.isArray(hashtags)
+      ? hashtags
+          .flatMap((tag) => tag.split(","))
+          .map((tag) => tag.trim().replace(/^#/, ""))
+          .filter(Boolean)
+      : hashtags
+          .split(",")
+          .map((tag) => tag.trim().replace(/^#/, ""))
+          .filter(Boolean);
   }
 
   if (uploadedMedia) {
@@ -158,11 +212,7 @@ const deletePost = asyncHandler(async (req, res) => {
   //removing data from cloudinary
 
   for (const media of post.media) {
-    const result = await cloudinary.uploader.destroy(media.publicId, {
-      resource_type: media.type,
-    });
-
-    console.log(result);
+    await deleteFromCloudinary(media.publicId, media.type);
   }
 
   //deeleting from database
@@ -174,4 +224,22 @@ const deletePost = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, {}, "Post is deleted"));
 });
 
-export { createPost, getAllPost, updatePost, deletePost };
+const getPostById = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+
+  const post = await Post.findById(postId);
+
+  if (!post) {
+    throw new ApiError(404, "Post not found");
+  }
+
+  if (!post.user.equals(req.user._id)) {
+    throw new ApiError(403, "Unauthorized");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, post, "Post fetched successfully"));
+});
+
+export { createPost, getAllPost, updatePost, deletePost, getPostById };
