@@ -5,15 +5,8 @@ import ApiError from "../utils/apiError.js";
 import { generatePost } from "../services/ai.service.js";
 
 const generateLinkedInPost = asyncHandler(async (req, res) => {
-  const {
-    topic,
-    tone,
-    audience,
-    length,
-    difficulty,
-    style,
-    instructions,
-  } = req.body;
+  const { topic, tone, audience, length, difficulty, style, instructions } =
+    req.body;
 
   if (!topic?.trim()) {
     throw new ApiError(400, "Topic is required");
@@ -30,19 +23,31 @@ const generateLinkedInPost = asyncHandler(async (req, res) => {
   });
 
   const cleanResult = result
-    .replace(/```json/g, "")
+    .replace(/```json/gi, "")
+    .replace(/```javascript/gi, "")
+    .replace(/```typescript/gi, "")
+    .replace(/```jsx/gi, "")
+    .replace(/```js/gi, "")
+    .replace(/```java/gi, "")
     .replace(/```/g, "")
     .trim();
 
   const parsedResult = JSON.parse(cleanResult);
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      parsedResult,
-      "Post generated successfully"
-    )
-  );
+  // Clean LinkedIn content
+  if (parsedResult.content) {
+    parsedResult.content = parsedResult.content.normalize("NFKC").trim();
+  }
+
+  console.log("========== AI POST ==========");
+  console.log("Characters:", parsedResult.content.length);
+  console.log("UTF-8 bytes:", Buffer.byteLength(parsedResult.content, "utf8"));
+  console.log(parsedResult.content);
+  console.log("=============================");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, parsedResult, "Post generated successfully"));
 });
 
 export { generateLinkedInPost };

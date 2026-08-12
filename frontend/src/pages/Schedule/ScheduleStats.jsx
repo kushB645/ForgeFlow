@@ -1,46 +1,52 @@
-import {
-  FiCalendar,
-  FiClock,
-  FiCheckCircle,
-  FiFileText,
-} from "react-icons/fi";
+import { FiCalendar, FiClock, FiCheckCircle, FiFileText } from "react-icons/fi";
 
-const stats = [
-  {
-    title: "Scheduled Today",
-    value: "03",
-    subtitle: "Posts queued today",
-    icon: <FiCalendar size={22} />,
-    color: "text-cyan-400",
-    bg: "bg-cyan-500/10",
-  },
-  {
-    title: "Upcoming",
-    value: "18",
-    subtitle: "Next 30 days",
-    icon: <FiClock size={22} />,
-    color: "text-violet-400",
-    bg: "bg-violet-500/10",
-  },
-  {
-    title: "Published",
-    value: "154",
-    subtitle: "Successfully published",
-    icon: <FiCheckCircle size={22} />,
-    color: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-  },
-  {
-    title: "Drafts",
-    value: "09",
-    subtitle: "Ready for scheduling",
-    icon: <FiFileText size={22} />,
-    color: "text-amber-400",
-    bg: "bg-amber-500/10",
-  },
-];
+const ScheduleStats = ({ posts }) => {
+  const scheduledPosts = posts.filter((post) => post.status === "scheduled");
 
-const ScheduleStats = () => {
+  const publishedPosts = posts.filter((post) => post.status === "published");
+
+  const draftPosts = posts.filter((post) => post.status === "draft");
+
+  const today = new Date().toDateString();
+
+  const scheduledToday = scheduledPosts.filter(
+    (post) =>
+      post.scheduledAt && new Date(post.scheduledAt).toDateString() === today
+  );
+  const stats = [
+    {
+      title: "Scheduled Today",
+      value: scheduledToday.length,
+      subtitle: "Posts queued today",
+      icon: <FiCalendar size={22} />,
+      color: "text-cyan-400",
+      bg: "bg-cyan-500/10",
+    },
+    {
+      title: "Upcoming",
+      value: scheduledPosts.length,
+      subtitle: "Scheduled posts",
+      icon: <FiClock size={22} />,
+      color: "text-violet-400",
+      bg: "bg-violet-500/10",
+    },
+    {
+      title: "Published",
+      value: publishedPosts.length,
+      subtitle: "Successfully published",
+      icon: <FiCheckCircle size={22} />,
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/10",
+    },
+    {
+      title: "Drafts",
+      value: draftPosts.length,
+      subtitle: "Ready for scheduling",
+      icon: <FiFileText size={22} />,
+      color: "text-amber-400",
+      bg: "bg-amber-500/10",
+    },
+  ];
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
       {stats.map((item) => (
@@ -56,9 +62,7 @@ const ScheduleStats = () => {
                 {item.value}
               </h2>
 
-              <p className="mt-2 text-sm text-slate-500">
-                {item.subtitle}
-              </p>
+              <p className="mt-2 text-sm text-slate-500">{item.subtitle}</p>
             </div>
 
             <div

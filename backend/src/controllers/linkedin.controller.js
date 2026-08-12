@@ -21,12 +21,19 @@ const connectLinkedIn = asyncHandler(async (req, res) => {
 
   const option = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     sameSite: "lax",
+    path: "/",
+    maxAge: 10 * 60 * 1000,
   };
+  res.cookie("linkedin_state", state, option);
+  res.cookie("oauth_user", req.user._id.toString(), option);
+
+  console.log("Generated State:", state);
+  console.log("Cookies should be set now");
 
   res.cookie("linkedin_state", state, option);
-  res.cookie("oauth_user", "6a6a9af88dbf739bb3ec9c66", option);
+  res.cookie("oauth_user", req.user._id.toString(), option);
 
   console.log("Generated State:", state);
 
@@ -91,14 +98,18 @@ const linkedinCallback = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Failed to connect LinkedIn account");
   }
 
+  
+
   res.clearCookie("linkedin_state");
   res.clearCookie("oauth_user");
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, linkedinAccount, "LinkedIn connected successfully")
-    );
+  return res.status(200).json(
+  new ApiResponse(
+    200,
+    linkedinAccount,
+    "LinkedIn connected successfully"
+  )
+);
 });
 
 const publishPost = asyncHandler(async (req, res) => {
@@ -165,13 +176,78 @@ const publishPost = asyncHandler(async (req, res) => {
   // Save changes
   await post.save();
 
-  return res.status(200).json(
-  new ApiResponse(
-    200,
-    post,
-    "Post published successfully"
-  )
-);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, post, "Post published successfully"));
 });
 
-export { connectLinkedIn, linkedinCallback, publishPost };
+const getLinkedInAccount = asyncHandler(async (req, res) => {
+  const account = await LinkedInAccount.findOne({
+    owner: req.user._id,
+  }).select(
+    "linkedinId profilePicture profileUrl isConnected expiresAt createdAt updatedAt"
+  );
+
+  if (!account) {
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          connected: false,
+          account: null,
+        },
+        "LinkedIn account not connected"
+      )
+    );
+  }
+
+  const isExpired =
+    account.expiresAt && new Date() > new Date(account.expiresAt);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        connected: account.isConnected && !isExpired,
+        account: {
+          linkedinId: account.linkedinId,
+          profilePicture: account.profilePicture,
+          profileUrl: account.profileUrl,
+          isConnected: account.isConnected,
+          expiresAt: account.expiresAt,
+          createdAt: account.createdAt,
+          updatedAt: account.updatedAt,
+        },
+      },
+      "LinkedIn account fetched successfully"
+    )
+  );
+});
+
+const disconnectLinkedIn = asyncHandler(async (req, res) => {
+  const account = await LinkedInAccount.findOne({
+    owner: req.user._id,
+  });
+
+  if (!account) {
+    throw new ApiError(404, "LinkedIn account not found");
+  }
+
+  account.isConnected = false;
+
+  await account.save();
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, {}, "LinkedIn account disconnected successfully")
+    );
+});
+
+export {
+  connectLinkedIn,
+  linkedinCallback,
+  publishPost,
+  getLinkedInAccount,
+  disconnectLinkedIn,
+};

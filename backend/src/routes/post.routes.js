@@ -3,7 +3,9 @@ import {
   deletePost,
   getAllPost,
   updatePost,
-  getPostById
+  getPostById,
+  publishPost,
+  duplicatePost
 } from "../controllers/post.controller.js";
 import {
   schedulePost,
@@ -21,11 +23,17 @@ router
   .post(verifyJWT, upload.array("media"), createPost)
   .get(verifyJWT, getAllPost);
 
-router
-  .route("/update-post/:postId")
-  .patch(verifyJWT, upload.array("media"), updatePost);
+  router
+  .route("/duplicate/:postId")
+  .post(verifyJWT, duplicatePost);
 
-router.route("/delete-post/:postId").delete(verifyJWT, deletePost);
+router
+  .route("/:postId")
+  .get(verifyJWT, getPostById)
+  .patch(verifyJWT, upload.array("media"), updatePost)
+  .delete(verifyJWT, deletePost);
+
+  router.route("/publish/:postId").post(verifyJWT, publishPost);
 
 router.route("/schedule-post/:postId").post(verifyJWT, schedulePost);
 
@@ -34,7 +42,5 @@ router
   .post(verifyJWT, cancelScheduledPost);
 
 router.route("/reschedule-post/:postId").post(verifyJWT, reschedulePost);
-
-router.route("/:postId").get(verifyJWT, getPostById);
 
 export default router;

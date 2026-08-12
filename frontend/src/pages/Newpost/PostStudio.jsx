@@ -4,6 +4,8 @@ import { FiTag, FiPlus } from "react-icons/fi";
 const PostStudio = ({
   formData,
   setFormData,
+  hashtagsInput,
+  setHashtagsInput,
   handleGenerate,
   loading,
 }) => {
@@ -120,16 +122,20 @@ const PostStudio = ({
 
           <input
             type="text"
-            value={formData.hashtags.join(", ")}
-            onChange={(e) =>
+            value={hashtagsInput}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              setHashtagsInput(value);
+
               setFormData((prev) => ({
                 ...prev,
-                hashtags: e.target.value
+                hashtags: value
                   .split(",")
                   .map((tag) => tag.trim().replace(/^#/, ""))
                   .filter(Boolean),
-              }))
-            }
+              }));
+            }}
             placeholder="react, javascript, frontend"
             className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none"
           />
@@ -166,6 +172,42 @@ const PostStudio = ({
             placeholder="Mention Context API, keep it beginner friendly and end with a question..."
             className="w-full resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none"
           />
+        </div>
+
+        {/* Generated Content */}
+        <div className="mb-8">
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Generated Post
+          </label>
+
+          <textarea
+            rows={12}
+            value={formData.content}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                content: e.target.value,
+              }))
+            }
+            placeholder="Your AI-generated LinkedIn post will appear here..."
+            className="w-full resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none"
+          />
+
+          <div className="mt-2 flex items-center justify-between text-sm">
+            <span className="text-slate-500">
+              {formData.content.length} characters
+            </span>
+
+            <span
+              className={`${
+                formData.content.length > 3000
+                  ? "text-red-400"
+                  : "text-emerald-400"
+              }`}
+            >
+              LinkedIn Ready
+            </span>
+          </div>
         </div>
 
         {/* Featured Image */}
@@ -224,9 +266,14 @@ const PostStudio = ({
 
       {/* Generate */}
       <div className="border-t border-slate-800 p-6">
-        <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-500 py-3.5 font-semibold text-white transition hover:scale-[1.01]">
+        <button
+          onClick={handleGenerate}
+          disabled={loading}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-500 py-3.5 font-semibold text-white transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+        >
           <HiSparkles className="text-lg" />
-          Generate LinkedIn Post
+
+          {loading ? "Generating..." : "Generate LinkedIn Post"}
         </button>
       </div>
     </section>

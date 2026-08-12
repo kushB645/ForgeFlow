@@ -1,12 +1,70 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PostStudio from "./PostStudio";
 import LinkedInPreview from "./LinkedInPreview";
 import EditorToolbar from "./EditorToolbar";
 import { generateLinkedInPost } from "../../services/ai.service";
 import toast from "react-hot-toast";
+import {
+  createPost,
+  updatePost,
+  schedulePost,
+  publishPost,
+} from "../../services/post.service";
+import { useNavigate, useParams } from "react-router-dom";
+import { getPostById } from "../../services/post.service";
+import ScheduleModal from "../../components/ScheduleModal/ScheduleModal";
 
 const NewPost = () => {
+  const { postId } = useParams();
+
   const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    topic: "",
+    tone: "Professional",
+    audience: "Developers",
+    length: "Medium",
+    instructions: "",
+    content: "",
+    hashtags: [],
+    media: null,
+  });
+
+  const [hashtagsInput, setHashtagsInput] = useState("");
+
+  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+
+  const [publishing, setPublishing] = useState(false);
+
+  const navigate = useNavigate();
+
+  const fetchPost = async () => {
+    try {
+      const post = await getPostById(postId);
+
+      setFormData((prev) => ({
+        ...prev,
+        topic: post.topic || "",
+        tone: post.tone || "Professional",
+        audience: post.audience || "Developers",
+        length: post.length || "Medium",
+        instructions: post.instructions || "",
+        content: post.content || "",
+        hashtags: post.hashtags || [],
+        media: null,
+      }));
+      setHashtagsInput((post.hashtags || []).join(", "));
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load post");
+    }
+  };
+
+  useEffect(() => {
+    if (postId) {
+      fetchPost();
+    }
+  }, [postId]);
 
   const handleGenerate = async () => {
     try {
@@ -41,16 +99,124 @@ const NewPost = () => {
     }
   };
 
-  const [formData, setFormData] = useState({
-    topic: "",
-    tone: "Professional",
-    audience: "Developers",
-    length: "Medium",
-    instructions: "",
-    content: "",
-    hashtags: [],
-    media: null,
-  });
+  const handleSaveDraft = async () => {
+    try {
+      if (!formData.content.trim()) {
+        return toast.error("Post content is empty");
+      }
+
+      const form = new FormData();
+
+      form.append("content", formData.content);
+      form.append("hashtags", formData.hashtags.join(","));
+
+      if (formData.media) {
+        form.append("media", formData.media);
+      }
+
+      // Updating an existing post
+      if (postId) {
+        const updatedPost = await updatePost(postId, form);
+
+        console.log("Updated post:", updatedPost);
+
+        toast.success("Draft updated successfully");
+
+        return updatedPost;
+      }
+
+      // Creating a new post
+      const createdPost = await createPost(form);
+
+      console.log("Created post:", createdPost);
+
+      toast.success("Draft created successfully");
+
+      // Navigate using the MongoDB Post ID
+      navigate(`/new-post/${createdPost._id}`);
+
+      return createdPost;
+    } catch (error) {
+      console.log(error);
+
+      toast.error(error?.response?.data?.message || "Failed to save draft");
+    }
+  };
+
+  const handlePublish = async () => {
+    try {
+      if (!formData.content.trim()) {
+        return toast.error("Post content is empty");
+      }
+
+      setPublishing(true);
+
+      let currentPostId = postId;
+
+      // If this is a new post, save it first
+      if (!currentPostId) {
+        const form = new FormData();
+
+        form.append("content", formData.content);
+        form.append("hashtags", formData.hashtags.join(","));
+
+        if (formData.media) {
+          form.append("media", formData.media);
+        }
+
+        const createdPost = await createPost(form);
+
+        currentPostId = createdPost._id;
+      } else {
+        // Save latest changes before publishing
+        const form = new FormData();
+
+        form.append("content", formData.content);
+        form.append("hashtags", formData.hashtags.join(","));
+
+        if (formData.media) {
+          form.append("media", formData.media);
+        }
+
+        await updatePost(currentPostId, form);
+      }
+
+      // Send post to BullMQ
+      await publishPost(currentPostId);
+
+      toast.success("Post publishing started");
+
+      navigate("/content-library");
+
+      
+    } catch (error) {
+      console.log(error);
+
+      toast.error(error?.response?.data?.message || "Failed to publish post");
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const handleSchedule = async (scheduledAt) => {
+    try {
+      if (!postId) {
+        return toast.error("Please save the draft before scheduling.");
+      }
+
+      await schedulePost(postId, {
+        scheduledAt,
+      });
+
+      toast.success("Post scheduled successfully");
+
+      setIsScheduleOpen(false);
+    } catch (error) {
+      console.log(error);
+
+      toast.error(error?.response?.data?.message || "Failed to schedule post");
+    }
+  };
   return (
     <section className="space-y-8">
       <div className="text-center">
@@ -77,6 +243,8 @@ const NewPost = () => {
             <PostStudio
               formData={formData}
               setFormData={setFormData}
+              hashtagsInput={hashtagsInput}
+              setHashtagsInput={setHashtagsInput}
               handleGenerate={handleGenerate}
               loading={loading}
             />
@@ -89,9 +257,19 @@ const NewPost = () => {
 
         {/* Bottom Toolbar */}
         <div>
-          <EditorToolbar />
+          <EditorToolbar
+            handleSaveDraft={handleSaveDraft}
+            handleSchedule={() => setIsScheduleOpen(true)}
+            handlePublish={handlePublish}
+            publishing={publishing}
+          />
         </div>
       </div>
+      <ScheduleModal
+        isOpen={isScheduleOpen}
+        onClose={() => setIsScheduleOpen(false)}
+        onSchedule={handleSchedule}
+      />
     </section>
   );
 };

@@ -40,6 +40,7 @@ const postSchema = new Schema(
 
     scheduledAt: {
       type: Date,
+      default: null,
     },
 
     linkedinPostId: {

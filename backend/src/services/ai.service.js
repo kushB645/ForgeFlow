@@ -1,8 +1,8 @@
-import { GoogleGenAI } from "@google/genai"
+import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
-    apiKey: process.env.GGEMINI_API_KEY
-})
+  apiKey: process.env.GGEMINI_API_KEY,
+});
 
 export const generatePost = async ({
   topic,
@@ -13,7 +13,7 @@ export const generatePost = async ({
   style,
   instructions,
 }) => {
-    const prompt = `
+  const prompt = `
 You are a Senior Frontend Engineer, JavaScript expert, React developer, and one of the world's best technical LinkedIn educators.
 
 Your job is NOT to write generic AI-generated LinkedIn posts.
@@ -249,25 +249,30 @@ Always explain WHY before HOW.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💻 Example
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Generate a clean, realistic JavaScript or React example.
 
 Requirements:
 
-• Maximum 20 lines.
-
+• Maximum 15 lines.
 • Runnable without modification.
-
 • Use modern JavaScript or React.
-
 • Use meaningful variable names.
-
 • Follow clean coding practices.
-
 • Avoid fake APIs unless absolutely necessary.
-
 • Never generate pseudocode.
+
+LINKEDIN CODE FORMATTING:
+
+• Do NOT use Markdown code fences.
+• Do NOT use triple backticks.
+• Do NOT add language labels such as javascript, js, jsx, java, or typescript.
+• Use plain text code with normal line breaks.
+• Keep indentation simple.
+• Do not use unusual Unicode characters inside code.
 
 After the code, briefly explain the important parts.
 
@@ -313,23 +318,39 @@ FORMATTING
 
 • Maximum 1-2 emojis per section.
 
-• Unicode bold ONLY for:
+• Use normal readable text only.
 
-  - Main Hook
+• Do NOT use Unicode bold characters.
 
-  - Section Headings
+• Do NOT use Unicode italic or decorative mathematical characters.
 
-  - Key Takeaway Heading
+• Do NOT use Markdown bold such as **text**.
 
-• Do NOT overuse Unicode bold.
+• Do NOT use Markdown code fences.
 
-• Wrap code inside Markdown code blocks.
+• Do NOT use triple backticks.
+
+• Do NOT add code language labels such as javascript, js, jsx, java, or typescript.
+
+• Code must use normal ASCII characters and normal line breaks.
+
+• Do not use unusual Unicode characters inside code.
+
+• The post must be directly suitable for LinkedIn.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 LINKEDIN OPTIMIZATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Optimize the post specifically for LinkedIn.
+CONTENT LENGTH:
+
+• The final "content" must be between 1500 and 2500 characters.
+
+• Never exceed 2500 characters.
+
+• Count spaces, line breaks, emojis, punctuation, and all other characters.
+
+• This limit applies only to the "content" field.
 
 Rules:
 
@@ -424,9 +445,12 @@ Return this exact structure:
 }
 `;
 
- const response = await ai.models.generateContent({
+  const response = await ai.models.generateContent({
     model: "gemini-3.6-flash",
     contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+    },
   });
 
   return response.text;

@@ -112,14 +112,11 @@ const schedulePost = asyncHandler(async (req, res) => {
 });
 
 const cancelScheduledPost = asyncHandler(async (req, res) => {
-  //find id
   const { postId } = req.params;
 
   if (!postId) {
     throw new ApiError(400, "Post ID is required");
   }
-
-  //find post
 
   const post = await Post.findById(postId);
 
@@ -127,39 +124,24 @@ const cancelScheduledPost = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Post not found");
   }
 
-  //authorization
-
   if (!post.user.equals(req.user._id)) {
     throw new ApiError(403, "Unauthorized");
   }
 
-  // Already published
-
   if (post.status === "published") {
-    throw new ApiError(400, "Already published");
+    throw new ApiError(400, "Post is already published");
   }
 
-  // Not scheduled
   if (post.status !== "scheduled") {
     throw new ApiError(400, "Post is not scheduled");
   }
 
-  // Find BullMQ Job
-
   const job = await postQueue.getJob(post._id.toString());
 
-  console.log("Post ID:", post._id.toString());
-  console.log("Job:", job);
-
-  if (!job) {
-    throw new ApiError(404, "Scheduled job not found");
+  if (job) {
+    await job.remove();
   }
 
-  // Remove Job from Redis
-
-  await job.remove();
-
-  // Update MongoDB
   post.status = "draft";
   post.scheduledAt = null;
 
@@ -199,8 +181,8 @@ const reschedulePost = asyncHandler(async (req, res) => {
   }
 
   if (post.status !== "scheduled") {
-  throw new ApiError(400, "Post is not scheduled");
-}
+    throw new ApiError(400, "Post is not scheduled");
+  }
 
   // LinkedIn Account
   const linkedinAccount = await LinkedInAccount.findOne({
@@ -223,22 +205,21 @@ const reschedulePost = asyncHandler(async (req, res) => {
     );
   }
 
-  
   // Validate New Date
-  
+
   const { scheduledAt } = req.body;
-  
+
   if (!scheduledAt) {
     throw new ApiError(400, "Scheduled time is required");
   }
-  
+
   const scheduleDate = new Date(scheduledAt);
-  
+
   // Validate date
   if (isNaN(scheduleDate.getTime())) {
     throw new ApiError(400, "Invalid scheduled date");
   }
-  
+
   if (scheduleDate <= new Date()) {
     throw new ApiError(400, "Scheduled time must be in the future");
   }
@@ -254,11 +235,11 @@ const reschedulePost = asyncHandler(async (req, res) => {
   //removing old job
 
   await job.remove();
-  
+
   //delay
-  
+
   const delay = scheduleDate.getTime() - Date.now();
-  
+
   try {
     await postQueue.add(
       "publish-post",

@@ -33,21 +33,62 @@ export const updatePost = async (postId, formData) => {
 };
 
 export const deletePost = async (postId) => {
-  const response = await api.delete(`/posts/delete-post/${postId}`);
+  const response = await api.delete(`/posts/${postId}`);
 
   return response.data;
 };
 
 export const schedulePost = async (postId, data) => {
   const response = await api.post(
-    `/posts/${postId}/schedule`,
+    `/posts/schedule-post/${postId}`,
     data
   );
 
-  return response.data;
+  return response.data.data;
+};
+
+export const publishPost = async (postId) => {
+  const response = await api.post(`/posts/publish/${postId}`);
+
+  return response.data.data;
+};
+
+export const duplicatePost = async (postId) => {
+  const response = await api.post(
+    `/posts/duplicate/${postId}`
+  );
+
+  return response.data.data;
 };
 
 export const getPostById = async (postId) => {
   const response = await api.get(`/posts/${postId}`);
+  return response.data.data;
+};
+
+export const cancelScheduledPost = async (postId) => {
+  const response = await api.post(
+    `/posts/cancel-schedule-post/${postId}`
+  );
+
+  return response.data.data;
+};
+
+export const reschedulePost = async (postId, data) => {
+  const response = await api.post(
+    `/posts/reschedule-post/${postId}`,
+    data
+  );
+
+  return response.data.data;
+};
+
+export const getScheduledPosts = async () => {
+  const response = await api.get("/posts", {
+    params: {
+      status: "scheduled",
+    },
+  });
+
   return response.data.data;
 };

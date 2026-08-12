@@ -6,88 +6,121 @@ import {
   FiSend,
 } from "react-icons/fi";
 
-const LinkedInPreview = () => {
+const LinkedInPreview = ({ title, content, hashtags, media }) => {
+  const hashtagList = hashtags
+    ? hashtags
+        .split(",")
+        .map((tag) => tag.trim().replace(/^#/, ""))
+        .filter(Boolean)
+    : [];
+
   return (
-    <section className="sticky top-24 h-[calc(100vh-170px)] rounded-2xl border border-slate-800 bg-[#101827] shadow-lg">
-      <div className="flex h-full flex-col">
-        {/* Header */}
-        <div className="border-b border-slate-800 p-6">
-          <h2 className="text-xl font-semibold text-white">LinkedIn Preview</h2>
+    <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-[#101827] shadow-lg">
+      {/* Header */}
+      <div className="shrink-0 border-b border-slate-800 p-5">
+        <h2 className="text-xl font-semibold text-white">LinkedIn Preview</h2>
 
-          <p className="mt-1 text-sm text-slate-400">
-            Live preview of your post.
-          </p>
-        </div>
+        <p className="mt-1 text-sm text-slate-400">
+          Live preview of your post.
+        </p>
+      </div>
 
-        {/* Preview Card */}
-        <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
-          <div className="rounded-xl border border-slate-700 bg-slate-900 p-5">
-            {/* Profile */}
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 text-lg font-bold text-white">
-                KB
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-white">Kush Bhardwaj</h3>
-
-                <p className="text-sm text-slate-400">
-                  Frontend Developer • 3rd Year CSE Student
-                </p>
-
-                <div className="mt-1 flex items-center gap-1 text-xs text-slate-500">
-                  <span>Now</span>
-                  <FiGlobe />
-                </div>
-              </div>
+      {/* Preview */}
+      <div className="min-h-0 flex-1 overflow-y-auto p-5">
+        <div className="rounded-xl border border-slate-700 bg-slate-900 p-5">
+          {/* Profile */}
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 text-lg font-bold text-white">
+              KB
             </div>
 
-            {/* Content */}
-            <div className="mt-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white">
-                Your Post Title
-              </h2>
+            <div>
+              <h3 className="font-semibold text-white">Kush Bhardwaj</h3>
 
-              <p className="whitespace-pre-wrap leading-7 text-slate-300">
-                Start writing your LinkedIn post... Your content will appear
-                here as you type. Use this preview to see how your post will
-                look before publishing.
+              <p className="text-sm text-slate-400">
+                Frontend Developer • 3rd Year CSE Student
               </p>
-            </div>
 
-            {/* Image Placeholder */}
-            <div className="mt-6 flex h-56 items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-800 text-slate-500">
+              <div className="mt-1 flex items-center gap-1 text-xs text-slate-500">
+                <span>Now</span>
+                <FiGlobe />
+              </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="mt-5">
+            {title && (
+              <h2 className="mb-3 text-xl font-semibold text-white">{title}</h2>
+            )}
+
+            <p className="whitespace-pre-wrap leading-7 text-slate-300">
+              {content || "Start writing your LinkedIn post..."}
+            </p>
+
+            {/* Hashtags */}
+            {hashtagList.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {hashtagList.map((tag, index) => (
+                  <span
+                    key={`${tag}-${index}`}
+                    className="text-sm text-cyan-400"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Image */}
+          {media ? (
+            <img
+              src={URL.createObjectURL(media)}
+              alt="Post"
+              className="mt-5 h-48 w-full rounded-xl object-cover"
+            />
+          ) : (
+            <div className="mt-5 flex h-48 items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-800 text-slate-500">
               Featured Image Preview
             </div>
+          )}
 
-            {/* Stats */}
-            <div className="mt-6 flex items-center justify-between border-t border-slate-800 pt-4 text-sm text-slate-500">
-              <span>👍 142 Likes</span>
-              <span>18 Comments • 7 Reposts</span>
-            </div>
+          {/* Stats */}
+          <div className="mt-5 flex items-center justify-between border-t border-slate-800 pt-4 text-sm text-slate-500">
+            <span>👍 142 Likes</span>
 
-            {/* Actions */}
-            <div className="mt-4 grid grid-cols-4 border-t border-slate-800 pt-3">
-              <button className="flex items-center justify-center gap-2 rounded-lg py-2 text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400">
-                <FiThumbsUp />
-                Like
-              </button>
+            <span>18 Comments • 7 Reposts</span>
+          </div>
 
-              <button className="flex items-center justify-center gap-2 rounded-lg py-2 text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400">
-                <FiMessageCircle />
-                Comment
-              </button>
+          {/* Actions */}
+          <div className="mt-3 grid grid-cols-3 border-t border-slate-800 pt-3">
+            {/* Like */}
+            <button
+              type="button"
+              className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400"
+            >
+              <FiThumbsUp size={15} className="shrink-0" />
+              <span>Like</span>
+            </button>
 
-              <button className="flex items-center justify-center gap-2 rounded-lg py-2 text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400">
-                <FiRepeat />
-                Repost
-              </button>
+            {/* Comment */}
+            <button
+              type="button"
+              className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400"
+            >
+              <FiMessageCircle size={15} className="shrink-0" />
+              <span>Comment</span>
+            </button>
 
-              <button className="flex items-center justify-center gap-2 rounded-lg py-2 text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400">
-                <FiSend />
-                Send
-              </button>
-            </div>
+            {/* Send */}
+            <button
+              type="button"
+              className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400"
+            >
+              <FiSend size={15} className="shrink-0" />
+              <span>Send</span>
+            </button>
           </div>
         </div>
       </div>
