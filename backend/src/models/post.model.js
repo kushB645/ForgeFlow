@@ -34,12 +34,22 @@ const postSchema = new Schema(
 
     status: {
       type: String,
-      enum: ["draft", "scheduled", "published"],
+      enum: ["draft", "scheduled", "publishing", "published", "failed"],
       default: "draft",
     },
 
     scheduledAt: {
       type: Date,
+      default: null,
+    },
+
+    publishedAt: {
+      type: Date,
+      default: null,
+    },
+
+    errorMessage: {
+      type: String,
       default: null,
     },
 

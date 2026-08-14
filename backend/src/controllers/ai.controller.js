@@ -5,8 +5,16 @@ import ApiError from "../utils/apiError.js";
 import { generatePost } from "../services/ai.service.js";
 
 const generateLinkedInPost = asyncHandler(async (req, res) => {
-  const { topic, tone, audience, length, difficulty, style, instructions } =
-    req.body;
+  const {
+    topic,
+    tone,
+    audience,
+    length,
+    difficulty,
+    style,
+    instructions,
+    creativity,
+  } = req.body;
 
   if (!topic?.trim()) {
     throw new ApiError(400, "Topic is required");
@@ -20,6 +28,7 @@ const generateLinkedInPost = asyncHandler(async (req, res) => {
     difficulty,
     style,
     instructions,
+    creativity,
   });
 
   const cleanResult = result

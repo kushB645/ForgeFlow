@@ -4,6 +4,8 @@ import { FiTag, FiPlus } from "react-icons/fi";
 const PostStudio = ({
   formData,
   setFormData,
+  media,
+  setMedia,
   hashtagsInput,
   setHashtagsInput,
   handleGenerate,
@@ -233,17 +235,12 @@ const PostStudio = ({
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  media: e.target.files[0],
-                }))
-              }
+              onChange={(e) => setMedia(e.target.files[0])}
             />
           </label>
-          {formData.media && (
+          {media && (
             <p className="mt-3 text-center text-sm text-cyan-400">
-              {formData.media.name}
+              {media.name}
             </p>
           )}
         </div>

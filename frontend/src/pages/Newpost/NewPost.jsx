@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import usePersistentState from "../../hooks/usePersistentState";
 import PostStudio from "./PostStudio";
 import LinkedInPreview from "./LinkedInPreview";
 import EditorToolbar from "./EditorToolbar";
 import { generateLinkedInPost } from "../../services/ai.service";
+import { getAIPreferences } from "../../services/settings.service";
 import toast from "react-hot-toast";
 import {
   createPost,
@@ -19,31 +21,44 @@ const NewPost = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = usePersistentState("forgeflow_ai_post", {
     topic: "",
-    tone: "Professional",
     audience: "Developers",
-    length: "Medium",
     instructions: "",
     content: "",
     hashtags: [],
-    media: null,
   });
 
-  const [hashtagsInput, setHashtagsInput] = useState("");
+  const [hashtagsInput, setHashtagsInput] = usePersistentState(
+    "forgeflow_ai_hashtags_input",
+    ""
+  );
+
+  const [media, setMedia] = useState(null);
 
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
   const [publishing, setPublishing] = useState(false);
 
+  const [aiPreferences, setAIPreferences] = useState({
+    model: "Gemini AI",
+    tone: "Professional",
+    creativity: "Medium",
+    length: "Medium",
+  });
+
   const navigate = useNavigate();
+
+  const clearAIDraft = () => {
+    localStorage.removeItem("forgeflow_ai_post");
+    localStorage.removeItem("forgeflow_ai_hashtags_input");
+  };
 
   const fetchPost = async () => {
     try {
       const post = await getPostById(postId);
 
-      setFormData((prev) => ({
-        ...prev,
+      setFormData({
         topic: post.topic || "",
         tone: post.tone || "Professional",
         audience: post.audience || "Developers",
@@ -51,8 +66,8 @@ const NewPost = () => {
         instructions: post.instructions || "",
         content: post.content || "",
         hashtags: post.hashtags || [],
-        media: null,
-      }));
+      });
+
       setHashtagsInput((post.hashtags || []).join(", "));
     } catch (error) {
       console.log(error);
@@ -61,6 +76,26 @@ const NewPost = () => {
   };
 
   useEffect(() => {
+    const loadAIPreferences = async () => {
+      try {
+        const data = await getAIPreferences();
+
+        setAIPreferences(data);
+
+        if (!postId) {
+          setFormData((prev) => ({
+            ...prev,
+            tone: data.tone || "Professional",
+            length: data.length || "Medium",
+          }));
+        }
+      } catch (error) {
+        console.log("AI preferences error:", error);
+      }
+    };
+
+    loadAIPreferences();
+
     if (postId) {
       fetchPost();
     }
@@ -76,11 +111,12 @@ const NewPost = () => {
 
       const data = await generateLinkedInPost({
         topic: formData.topic,
-        tone: formData.tone,
+        tone: aiPreferences.tone,
         audience: formData.audience,
-        length: formData.length,
+        length: aiPreferences.length,
         difficulty: "Intermediate",
         style: "Educational",
+        creativity: aiPreferences.creativity,
         instructions: formData.instructions,
       });
 
@@ -93,7 +129,8 @@ const NewPost = () => {
       toast.success("Post generated successfully");
     } catch (error) {
       console.log(error);
-      toast.error("Failed to generate post");
+
+      toast.error(error?.response?.data?.message || "Failed to generate post");
     } finally {
       setLoading(false);
     }
@@ -110,8 +147,8 @@ const NewPost = () => {
       form.append("content", formData.content);
       form.append("hashtags", formData.hashtags.join(","));
 
-      if (formData.media) {
-        form.append("media", formData.media);
+      if (media) {
+        form.append("media", media);
       }
 
       // Updating an existing post
@@ -121,6 +158,8 @@ const NewPost = () => {
         console.log("Updated post:", updatedPost);
 
         toast.success("Draft updated successfully");
+
+        clearAIDraft();
 
         return updatedPost;
       }
@@ -132,7 +171,8 @@ const NewPost = () => {
 
       toast.success("Draft created successfully");
 
-      // Navigate using the MongoDB Post ID
+      clearAIDraft();
+
       navigate(`/new-post/${createdPost._id}`);
 
       return createdPost;
@@ -160,8 +200,8 @@ const NewPost = () => {
         form.append("content", formData.content);
         form.append("hashtags", formData.hashtags.join(","));
 
-        if (formData.media) {
-          form.append("media", formData.media);
+        if (media) {
+          form.append("media", media);
         }
 
         const createdPost = await createPost(form);
@@ -174,8 +214,8 @@ const NewPost = () => {
         form.append("content", formData.content);
         form.append("hashtags", formData.hashtags.join(","));
 
-        if (formData.media) {
-          form.append("media", formData.media);
+        if (media) {
+          form.append("media", media);
         }
 
         await updatePost(currentPostId, form);
@@ -186,9 +226,9 @@ const NewPost = () => {
 
       toast.success("Post publishing started");
 
-      navigate("/content-library");
+      clearAIDraft();
 
-      
+      navigate("/content-library");
     } catch (error) {
       console.log(error);
 
@@ -200,19 +240,54 @@ const NewPost = () => {
 
   const handleSchedule = async (scheduledAt) => {
     try {
-      if (!postId) {
-        return toast.error("Please save the draft before scheduling.");
+      if (!formData.content.trim()) {
+        return toast.error("Post content is empty");
       }
 
-      await schedulePost(postId, {
+      let currentPostId = postId;
+
+      // Create post if it doesn't exist
+      if (!currentPostId) {
+        const form = new FormData();
+
+        form.append("content", formData.content);
+        form.append("hashtags", formData.hashtags.join(","));
+
+        if (media) {
+          form.append("media", media);
+        }
+
+        const createdPost = await createPost(form);
+
+        currentPostId = createdPost._id;
+      } else {
+        // Save latest changes
+        const form = new FormData();
+
+        form.append("content", formData.content);
+        form.append("hashtags", formData.hashtags.join(","));
+
+        if (media) {
+          form.append("media", media);
+        }
+
+        await updatePost(currentPostId, form);
+      }
+
+      // Schedule the post
+      await schedulePost(currentPostId, {
         scheduledAt,
       });
 
       toast.success("Post scheduled successfully");
 
+      clearAIDraft();
+
       setIsScheduleOpen(false);
+
+      navigate("/schedule");
     } catch (error) {
-      console.log(error);
+      console.log("Schedule error:", error);
 
       toast.error(error?.response?.data?.message || "Failed to schedule post");
     }
@@ -243,6 +318,8 @@ const NewPost = () => {
             <PostStudio
               formData={formData}
               setFormData={setFormData}
+              media={media}
+              setMedia={setMedia}
               hashtagsInput={hashtagsInput}
               setHashtagsInput={setHashtagsInput}
               handleGenerate={handleGenerate}

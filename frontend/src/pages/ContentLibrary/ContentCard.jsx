@@ -5,17 +5,16 @@ import {
   FiEdit2,
   FiEye,
   FiTrash2,
+  FiRefreshCw,
+  FiXCircle,
 } from "react-icons/fi";
 
 const statusStyles = {
-  published:
-    "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+  published: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
 
-  draft:
-    "bg-slate-700/60 text-slate-300 border border-slate-600",
+  draft: "bg-slate-700/60 text-slate-300 border border-slate-600",
 
-  scheduled:
-    "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20",
+  scheduled: "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20",
 };
 
 const formatDate = (date) => {
@@ -33,6 +32,8 @@ const ContentCard = ({
   onEdit,
   onDelete,
   onDuplicate,
+  onReschedule,
+  onCancelSchedule,
 }) => {
   const status = post.status?.toLowerCase();
 
@@ -101,10 +102,7 @@ const ContentCard = ({
       {post.hashtags?.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2">
           {post.hashtags.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="text-xs text-cyan-400"
-            >
+            <span key={tag} className="text-xs text-cyan-400">
               #{tag}
             </span>
           ))}
@@ -128,9 +126,7 @@ const ContentCard = ({
             <FiCalendar />
 
             <span>
-              {post.scheduledAt
-                ? formatDate(post.scheduledAt)
-                : "Scheduled"}
+              {post.scheduledAt ? formatDate(post.scheduledAt) : "Scheduled"}
             </span>
           </div>
         ) : status === "draft" ? (
@@ -149,27 +145,57 @@ const ContentCard = ({
         <div className="flex items-center gap-2">
           {/* Edit */}
           <button
+            type="button"
             onClick={() => onEdit(post)}
             className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400"
+            title="Edit"
           >
             <FiEdit2 size={17} />
           </button>
 
           {/* Duplicate */}
           <button
+            type="button"
             onClick={() => onDuplicate(post)}
             className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400"
+            title="Duplicate"
           >
             <FiCopy size={17} />
           </button>
 
-          {/* Delete */}
-          <button
-            onClick={() => onDelete(post._id)}
-            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-red-400"
-          >
-            <FiTrash2 size={17} />
-          </button>
+          {status === "scheduled" ? (
+            <>
+              {/* Reschedule */}
+              <button
+                type="button"
+                onClick={() => onReschedule(post)}
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400"
+                title="Reschedule"
+              >
+                <FiRefreshCw size={17} />
+              </button>
+
+              {/* Cancel Schedule */}
+              <button
+                type="button"
+                onClick={() => onCancelSchedule(post)}
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-red-400"
+                title="Cancel Schedule"
+              >
+                <FiXCircle size={17} />
+              </button>
+            </>
+          ) : (
+            /* Delete */
+            <button
+              type="button"
+              onClick={() => onDelete(post._id)}
+              className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-red-400"
+              title="Delete"
+            >
+              <FiTrash2 size={17} />
+            </button>
+          )}
         </div>
       </div>
     </div>

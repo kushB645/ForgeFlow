@@ -18,11 +18,16 @@ const statusStyles = {
 };
 
 const ScheduleCard = ({
+  postId,
   title,
   description,
   time,
   date,
   status = "Scheduled",
+  onEdit,
+  onDelete,
+  onPublish,
+  onCancelSchedule,
 }) => {
   return (
     <div className="group rounded-2xl border border-slate-800 bg-slate-900/60 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/40">

@@ -53,11 +53,7 @@ const IntegrationCard = ({
         >
           <FiCheckCircle />
 
-          {loading
-            ? "Checking..."
-            : connected
-            ? "Connected"
-            : "Not Connected"}
+          {loading ? "Checking..." : connected ? "Connected" : "Not Connected"}
         </span>
       </div>
 
@@ -79,52 +75,46 @@ const IntegrationCard = ({
                 src={account.profilePicture}
                 alt="LinkedIn profile"
                 className="h-14 w-14 rounded-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                  e.currentTarget.nextElementSibling.style.display = "flex";
+                }}
               />
-            ) : (
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0077B5]/20 text-[#0077B5]">
-                <FiLinkedin size={24} />
-              </div>
-            )}
+            ) : null}
+
+            <div
+              className={`h-14 w-14 items-center justify-center rounded-full bg-[#0077B5]/20 text-[#0077B5] ${
+                account?.profilePicture ? "hidden" : "flex"
+              }`}
+            >
+              <FiLinkedin size={24} />
+            </div>
 
             <div>
-              <p className="text-sm text-slate-400">
-                Connected Account
-              </p>
+              <p className="text-sm text-slate-400">Connected Account</p>
 
-              <h3 className="mt-1 font-semibold text-white">
-                {profileName}
-              </h3>
+              <h3 className="mt-1 font-semibold text-white">{profileName}</h3>
             </div>
           </div>
 
           {/* Token information */}
           <div className="mt-4 grid grid-cols-2 gap-4">
             <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
-              <p className="text-sm text-slate-400">
-                Connection Status
-              </p>
+              <p className="text-sm text-slate-400">Connection Status</p>
 
-              <h3 className="mt-2 font-semibold text-emerald-400">
-                Active
-              </h3>
+              <h3 className="mt-2 font-semibold text-emerald-400">Active</h3>
             </div>
 
             <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
-              <p className="text-sm text-slate-400">
-                Token Expires
-              </p>
+              <p className="text-sm text-slate-400">Token Expires</p>
 
-              <h3 className="mt-2 font-semibold text-white">
-                {expiresAt}
-              </h3>
+              <h3 className="mt-2 font-semibold text-white">{expiresAt}</h3>
             </div>
           </div>
 
           {/* Features */}
           <div className="mt-6 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
-            <h4 className="font-semibold text-cyan-400">
-              Connected Features
-            </h4>
+            <h4 className="font-semibold text-cyan-400">Connected Features</h4>
 
             <ul className="mt-3 space-y-2 text-sm text-slate-300">
               <li>• Publish posts directly to LinkedIn</li>
@@ -178,8 +168,8 @@ const IntegrationCard = ({
             </h3>
 
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">
-              Connect LinkedIn to publish and schedule your
-              ForgeFlow posts automatically.
+              Connect LinkedIn to publish and schedule your ForgeFlow posts
+              automatically.
             </p>
           </div>
 

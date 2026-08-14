@@ -33,6 +33,50 @@ const userSchema = new Schema(
       type: String, //cloudinary url
     },
 
+    aiPreferences: {
+      model: {
+        type: String,
+        default: "Gemini AI",
+      },
+
+      tone: {
+        type: String,
+        default: "Professional",
+      },
+
+      creativity: {
+        type: String,
+        default: "Medium",
+      },
+
+      length: {
+        type: String,
+        default: "Medium",
+      },
+    },
+
+    notificationPreferences: {
+      publishingSuccess: {
+        type: Boolean,
+        default: true,
+      },
+
+      publishingFailure: {
+        type: Boolean,
+        default: true,
+      },
+
+      weeklySummary: {
+        type: Boolean,
+        default: false,
+      },
+
+      aiSuggestions: {
+        type: Boolean,
+        default: true,
+      },
+    },
+
     password: {
       type: String,
       required: [true, "Password is required"],

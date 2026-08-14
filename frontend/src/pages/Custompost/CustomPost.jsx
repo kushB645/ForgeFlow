@@ -1,4 +1,5 @@
 import { useState } from "react";
+import usePersistentState from "../../hooks/usePersistentState";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -18,10 +19,19 @@ import ScheduleModal from "../../components/ScheduleModal/ScheduleModal";
 const CustomPost = () => {
   const navigate = useNavigate();
 
-  const [content, setContent] = useState("");
-  const [title, setTitle] = useState("");
+  const [content, setContent] = usePersistentState(
+    "forgeflow_custom_content",
+    ""
+  );
+
+  const [title, setTitle] = usePersistentState("forgeflow_custom_title", "");
+
   const [media, setMedia] = useState(null);
-  const [hashtags, setHashtags] = useState("");
+
+  const [hashtags, setHashtags] = usePersistentState(
+    "forgeflow_custom_hashtags",
+    ""
+  );
 
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -72,13 +82,17 @@ const CustomPost = () => {
 
       toast.success("Draft saved successfully");
 
+      localStorage.removeItem("forgeflow_custom_content");
+      localStorage.removeItem("forgeflow_custom_title");
+      localStorage.removeItem("forgeflow_custom_hashtags");
+
       navigate("/content-library");
+
+      
     } catch (error) {
       console.log("Save draft error:", error);
 
-      toast.error(
-        error?.response?.data?.message || "Failed to save draft"
-      );
+      toast.error(error?.response?.data?.message || "Failed to save draft");
     } finally {
       setSaving(false);
     }
@@ -113,9 +127,7 @@ const CustomPost = () => {
     } catch (error) {
       console.log("Publish error:", error);
 
-      toast.error(
-        error?.response?.data?.message || "Failed to publish post"
-      );
+      toast.error(error?.response?.data?.message || "Failed to publish post");
     } finally {
       setPublishing(false);
     }
@@ -165,9 +177,7 @@ const CustomPost = () => {
     } catch (error) {
       console.log("Schedule error:", error);
 
-      toast.error(
-        error?.response?.data?.message || "Failed to schedule post"
-      );
+      toast.error(error?.response?.data?.message || "Failed to schedule post");
     } finally {
       setScheduling(false);
     }
@@ -182,12 +192,15 @@ const CustomPost = () => {
     setHashtags("");
     setMedia(null);
 
+    localStorage.removeItem("forgeflow_custom_content");
+    localStorage.removeItem("forgeflow_custom_title");
+    localStorage.removeItem("forgeflow_custom_hashtags");
+
     toast.success("Editor cleared");
   };
 
   return (
     <section className="space-y-8">
-
       {/* Hero */}
       <div className="text-center">
         <span className="inline-flex rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1 text-sm font-medium text-violet-400">
@@ -211,7 +224,6 @@ const CustomPost = () => {
 
       {/* Editor + Preview */}
       <div className="grid grid-cols-12 items-stretch gap-8">
-
         {/* Editor */}
         <div className="col-span-7 h-[650px]">
           <RichTextEditor
@@ -235,7 +247,6 @@ const CustomPost = () => {
             media={media}
           />
         </div>
-
       </div>
 
       {/* Bottom Toolbar */}
@@ -255,7 +266,6 @@ const CustomPost = () => {
         onClose={() => setIsScheduleOpen(false)}
         onSchedule={handleSchedule}
       />
-
     </section>
   );
 };

@@ -41,6 +41,7 @@ const UpcomingPosts = () => {
         {posts.map((post) => (
           <ScheduleCard
             key={post._id}
+            postId={post._id}
             title={post.content.slice(0, 40) + "..."}
             description={post.content}
             date={new Date(post.scheduledAt).toLocaleDateString("en-IN")}

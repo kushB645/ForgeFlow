@@ -11,8 +11,31 @@ export const generatePost = async ({
   length,
   difficulty,
   style,
+  creativity,
   instructions,
 }) => {
+  const creativityInstructions = {
+    Low: `
+Keep the generation highly predictable and focused.
+Prioritize factual accuracy, clarity, consistency, and straightforward explanations.
+Avoid unnecessary creativity, unusual analogies, or experimental writing.
+`,
+    Medium: `
+Balance creativity with technical accuracy.
+Use natural hooks, practical examples, and occasional useful analogies.
+Keep the writing professional, clear, and educational.
+`,
+    High: `
+Use a more creative and varied writing approach while remaining technically accurate.
+Experiment with stronger hooks, memorable analogies, storytelling elements, and varied sentence structures.
+Do not sacrifice technical correctness for creativity.
+`,
+  };
+
+  const selectedCreativity =
+    creativityInstructions[creativity] ||
+    creativityInstructions.Medium;
+
   const prompt = `
 You are a Senior Frontend Engineer, JavaScript expert, React developer, and one of the world's best technical LinkedIn educators.
 

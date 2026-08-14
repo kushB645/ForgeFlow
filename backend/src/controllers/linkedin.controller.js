@@ -9,7 +9,6 @@ import {
   getLinkedInProfile,
   publishToLinkedIn,
 } from "../services/linkedin.service.js";
-import { time } from "console";
 import { Post } from "../models/post.model.js";
 
 const connectLinkedIn = asyncHandler(async (req, res) => {
@@ -26,16 +25,12 @@ const connectLinkedIn = asyncHandler(async (req, res) => {
     path: "/",
     maxAge: 10 * 60 * 1000,
   };
-  res.cookie("linkedin_state", state, option);
-  res.cookie("oauth_user", req.user._id.toString(), option);
-
-  console.log("Generated State:", state);
-  console.log("Cookies should be set now");
 
   res.cookie("linkedin_state", state, option);
   res.cookie("oauth_user", req.user._id.toString(), option);
 
   console.log("Generated State:", state);
+  console.log("OAuth cookies set for user:", req.user._id);
 
   const authUrl = generateAuthUrl(state);
 
@@ -77,9 +72,7 @@ const linkedinCallback = asyncHandler(async (req, res) => {
   const userId = req.cookies.oauth_user;
 
   const linkedinAccount = await LinkedInAccount.findOneAndUpdate(
-    {
-      owner: userId,
-    },
+    { owner: userId },
     {
       linkedinId: profile.sub,
       accessToken: tokenData.access_token,
@@ -88,7 +81,7 @@ const linkedinCallback = asyncHandler(async (req, res) => {
       isConnected: true,
     },
     {
-      new: true,
+      returnDocument: "after",
       upsert: true,
       runValidators: true,
     }
@@ -98,18 +91,23 @@ const linkedinCallback = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Failed to connect LinkedIn account");
   }
 
-  
-
   res.clearCookie("linkedin_state");
   res.clearCookie("oauth_user");
 
   return res.status(200).json(
-  new ApiResponse(
-    200,
-    linkedinAccount,
-    "LinkedIn connected successfully"
-  )
-);
+    new ApiResponse(
+      200,
+      {
+        _id: linkedinAccount._id,
+        linkedinId: linkedinAccount.linkedinId,
+        profilePicture: linkedinAccount.profilePicture,
+        profileUrl: linkedinAccount.profileUrl,
+        isConnected: linkedinAccount.isConnected,
+        expiresAt: linkedinAccount.expiresAt,
+      },
+      "LinkedIn connected successfully"
+    )
+  );
 });
 
 const publishPost = asyncHandler(async (req, res) => {

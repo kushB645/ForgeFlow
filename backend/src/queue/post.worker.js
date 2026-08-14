@@ -9,18 +9,14 @@ import { publishToLinkedIn } from "../services/linkedin.service.js";
 const postWorker = new Worker(
   "postQueue",
   async (job) => {
-    console.log("Processing Job:", job.data);
-
     const { postId, userId } = job.data;
 
-    // Find Post
     const post = await Post.findById(postId);
 
     if (!post) {
       throw new Error("Post not found");
     }
 
-    // Find LinkedIn Account
     const linkedinAccount = await LinkedInAccount.findOne({
       owner: userId,
     });
@@ -37,20 +33,38 @@ const postWorker = new Worker(
       throw new Error("LinkedIn access token expired");
     }
 
-    // Publish Post
-    const response = await publishToLinkedIn(
-      linkedinAccount.accessToken,
-      linkedinAccount.linkedinId,
-      post
-    );
-
-    // Update MongoDB
-    post.status = "published";
-    post.linkedinPostId = response.id || null;
+    // Publishing started
+    post.status = "publishing";
+    post.errorMessage = null;
 
     await post.save();
 
-    console.log("Post published successfully");
+    try {
+      const response = await publishToLinkedIn(
+        linkedinAccount.accessToken,
+        linkedinAccount.linkedinId,
+        post
+      );
+
+      post.status = "published";
+      post.linkedinPostId = response.id || null;
+      post.publishedAt = new Date();
+      post.errorMessage = null;
+
+      await post.save();
+
+      console.log("Post published successfully:", postId);
+
+      return response;
+    } catch (error) {
+      post.status = "failed";
+      post.errorMessage =
+        error.message || "Failed to publish post";
+
+      await post.save();
+
+      throw error;
+    }
   },
   {
     connection,

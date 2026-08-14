@@ -92,3 +92,9 @@ export const getScheduledPosts = async () => {
 
   return response.data.data;
 };
+
+export const deleteAllDrafts = async () => {
+  const response = await api.delete("/posts/delete-all-drafts");
+
+  return response.data.data;
+};

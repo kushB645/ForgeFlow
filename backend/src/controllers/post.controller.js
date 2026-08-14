@@ -335,6 +335,23 @@ const duplicatePost = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, duplicatedPost, "Post duplicated successfully"));
 });
 
+const deleteAllDrafts = asyncHandler(async (req, res) => {
+  const result = await Post.deleteMany({
+    user: req.user._id,
+    status: "draft",
+  });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        deletedCount: result.deletedCount,
+      },
+      "All drafts deleted successfully"
+    )
+  );
+});
+
 export {
   createPost,
   getAllPost,
@@ -343,4 +360,5 @@ export {
   getPostById,
   publishPost,
   duplicatePost,
+  deleteAllDrafts
 };

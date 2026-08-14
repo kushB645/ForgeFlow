@@ -1,8 +1,9 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
+import { Post } from "../models/post.model.js";
 import ApiError from "../utils/apiError.js";
 import validator from "validator";
-import {uploadOnCloudinary} from "../utils/cloudinary.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import ApiResponse from "../utils/apiResponse.js";
 import jwt from "jsonwebtoken";
 
@@ -203,13 +204,12 @@ const logoutUser = asyncHandler(async (req, res) => {
 //refresh access token
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-
   console.log("Cookies:", req.cookies);
-console.log("Body:", req.body);
+  console.log("Body:", req.body);
   const incomingRefreshToken =
-  req.cookies?.refreshToken ||
-  req.body?.refreshToken ||
-  req.header("Authorization")?.replace("Bearer ", "");
+    req.cookies?.refreshToken ||
+    req.body?.refreshToken ||
+    req.header("Authorization")?.replace("Bearer ", "");
 
   if (!incomingRefreshToken) {
     throw new ApiError(400, "Unauthorized access");
@@ -241,8 +241,9 @@ console.log("Body:", req.body);
       sameSite: "lax",
     };
 
-    const { accessToken, refreshToken } =
-      await generateAccessAndRefreshToken(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
 
     return res
       .status(200)
@@ -261,13 +262,9 @@ console.log("Body:", req.body);
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      req.user,
-      "Current user fetched successfully"
-    )
-  );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
 });
 
 const updateProfile = asyncHandler(async (req, res) => {
@@ -298,16 +295,113 @@ const updateProfile = asyncHandler(async (req, res) => {
       username: normalizedUsername,
     },
     {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     }
   ).select("-password -refreshToken");
 
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedUser, "Profile updated successfully"));
+});
+
+const updateAIPreferences = asyncHandler(async (req, res) => {
+  const { model, tone, creativity, length } = req.body;
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        "aiPreferences.model": model,
+        "aiPreferences.tone": tone,
+        "aiPreferences.creativity": creativity,
+        "aiPreferences.length": length,
+      },
+    },
+    {
+      returnDocument: "after",
+      runValidators: true,
+    }
+  ).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updatedUser.aiPreferences,
+        "AI preferences updated successfully"
+      )
+    );
+});
+
+const getAIPreferences = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id)
+    .select("aiPreferences");
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
   return res.status(200).json(
     new ApiResponse(
       200,
-      updatedUser,
-      "Profile updated successfully"
+      user.aiPreferences,
+      "AI preferences fetched successfully"
+    )
+  );
+});
+
+const updateNotificationPreferences = asyncHandler(async (req, res) => {
+  const {
+    publishingSuccess,
+    publishingFailure,
+    weeklySummary,
+    aiSuggestions,
+  } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        "notificationPreferences.publishingSuccess": publishingSuccess,
+        "notificationPreferences.publishingFailure": publishingFailure,
+        "notificationPreferences.weeklySummary": weeklySummary,
+        "notificationPreferences.aiSuggestions": aiSuggestions,
+      },
+    },
+    {
+      returnDocument: "after",
+    }
+  );
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      user.notificationPreferences,
+      "Notification preferences updated successfully"
+    )
+  );
+});
+
+const getNotificationPreferences = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select(
+    "notificationPreferences"
+  );
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      user.notificationPreferences,
+      "Notification preferences fetched successfully"
     )
   );
 });
@@ -334,21 +428,16 @@ const updateAvatar = asyncHandler(async (req, res) => {
       avatar: avatar.url,
     },
     {
-      new: true,
+      returnDocument: "after",
     }
   ).select("-password -refreshToken");
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      updatedUser,
-      "Avatar updated successfully"
-    )
-  );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedUser, "Avatar updated successfully"));
 });
 
 const changePassword = asyncHandler(async (req, res) => {
-
   const { oldPassword, newPassword } = req.body;
 
   if (!oldPassword || !newPassword) {
@@ -384,13 +473,37 @@ const changePassword = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        {},
-        "Password changed successfully"
-      )
-    );
+    .json(new ApiResponse(200, {}, "Password changed successfully"));
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken, getCurrentUser, updateProfile,updateAvatar, changePassword };
+const deleteAccount = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  await Post.deleteMany({
+    user: userId,
+  });
+
+  await User.findByIdAndDelete(userId);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Account deleted successfully"));
+});
+
+
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  getCurrentUser,
+  updateProfile,
+  updateAvatar,
+  changePassword,
+  deleteAccount,
+  updateAIPreferences,
+  getAIPreferences,
+  updateNotificationPreferences,
+  getNotificationPreferences,
+};

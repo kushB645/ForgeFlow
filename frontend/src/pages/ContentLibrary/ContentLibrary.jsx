@@ -53,11 +53,21 @@ const ContentLibrary = () => {
 
   const handleDelete = async (postId) => {
     try {
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this post?"
+      );
+
+      if (!confirmed) return;
+
       await deletePost(postId);
 
       setPosts((prev) => prev.filter((post) => post._id !== postId));
+
+      toast.success("Post deleted successfully");
     } catch (error) {
       console.log(error);
+
+      toast.error(error?.response?.data?.message || "Failed to delete post");
     }
   };
 

@@ -5,9 +5,12 @@ import ScheduleStats from "./ScheduleStats";
 import CalendarWidget from "./CalendarWidget";
 import UpcomingPosts from "./UpcomingPosts";
 import ActivityTimeline from "./ActivityTimeline";
+import { useNavigate } from "react-router-dom";
 
 const Schedule = () => {
   const [posts, setPosts] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPosts();
@@ -39,7 +42,11 @@ const Schedule = () => {
           </p>
         </div>
 
-        <button className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-500 px-6 py-3 font-semibold text-white transition hover:opacity-90">
+        <button
+          type="button"
+          onClick={() => navigate("/new-post")}
+          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-500 px-6 py-3 font-semibold text-white transition hover:opacity-90"
+        >
           <FiPlus />
           Schedule New
         </button>

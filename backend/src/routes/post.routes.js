@@ -5,7 +5,8 @@ import {
   updatePost,
   getPostById,
   publishPost,
-  duplicatePost
+  duplicatePost,
+  deleteAllDrafts
 } from "../controllers/post.controller.js";
 import {
   schedulePost,
@@ -23,9 +24,9 @@ router
   .post(verifyJWT, upload.array("media"), createPost)
   .get(verifyJWT, getAllPost);
 
-  router
-  .route("/duplicate/:postId")
-  .post(verifyJWT, duplicatePost);
+router.route("/duplicate/:postId").post(verifyJWT, duplicatePost);
+
+router.route("/delete-all-drafts").delete(verifyJWT, deleteAllDrafts);
 
 router
   .route("/:postId")
@@ -33,7 +34,7 @@ router
   .patch(verifyJWT, upload.array("media"), updatePost)
   .delete(verifyJWT, deletePost);
 
-  router.route("/publish/:postId").post(verifyJWT, publishPost);
+router.route("/publish/:postId").post(verifyJWT, publishPost);
 
 router.route("/schedule-post/:postId").post(verifyJWT, schedulePost);
 
@@ -42,5 +43,7 @@ router
   .post(verifyJWT, cancelScheduledPost);
 
 router.route("/reschedule-post/:postId").post(verifyJWT, reschedulePost);
+
+
 
 export default router;

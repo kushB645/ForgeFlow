@@ -6,6 +6,7 @@ const SettingCard = ({
   description,
   items = [],
   buttonText,
+  onClick,
 }) => {
   return (
     <div className="group rounded-2xl border border-slate-800 bg-[#101827] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/40">
@@ -46,7 +47,10 @@ const SettingCard = ({
       </div>
 
       {/* Footer */}
-      <button className="mt-6 w-full rounded-xl bg-gradient-to-r from-cyan-500 to-violet-500 py-3 font-semibold text-white transition hover:opacity-90">
+      <button
+        onClick={onClick}
+        className="mt-6 w-full rounded-xl bg-gradient-to-r from-cyan-500 to-violet-500 py-3 font-semibold text-white transition hover:opacity-90"
+      >
         {buttonText}
       </button>
     </div>

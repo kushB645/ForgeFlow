@@ -7,7 +7,12 @@ import {
   getCurrentUser,
   updateProfile,
   updateAvatar,
-  changePassword
+  changePassword,
+  deleteAccount,
+  updateAIPreferences,
+  getAIPreferences,
+  updateNotificationPreferences,
+  getNotificationPreferences,
 } from "../controllers/user.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
@@ -33,6 +38,21 @@ router
   .route("/update-avatar")
   .patch(verifyJWT, upload.single("avatar"), updateAvatar);
 
-  router.route("/change-password").patch(verifyJWT, changePassword);
+router.route("/change-password").patch(verifyJWT, changePassword);
+
+router.route("/delete-account").delete(verifyJWT, deleteAccount);
+
+router
+  .route("/ai-preferences")
+  .get(verifyJWT, getAIPreferences)
+  .patch(verifyJWT, updateAIPreferences);
+
+
+router
+  .route("/notification-preferences")
+  .get(verifyJWT, getNotificationPreferences)
+  .patch(verifyJWT, updateNotificationPreferences);
+
+
 
 export default router;
