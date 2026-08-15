@@ -293,28 +293,30 @@ const NewPost = () => {
     }
   };
   return (
-    <section className="space-y-8">
-      <div className="text-center">
-        <span className="inline-flex rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1 text-sm font-medium text-cyan-400">
+    <section className="space-y-6 sm:space-y-8">
+      {/* Header */}
+      <div className="px-2 text-center sm:px-0">
+        <span className="inline-flex rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-400 sm:px-4 sm:text-sm">
           AI Powered
         </span>
 
-        <h1 className="mt-5 text-5xl font-bold text-white">
+        <h1 className="mt-4 text-3xl font-bold text-white sm:mt-5 sm:text-4xl md:text-5xl">
           Create with{" "}
           <span className="bg-gradient-to-r from-cyan-400 to-violet-500 bg-clip-text text-transparent">
             AI
           </span>
         </h1>
 
-        <p className="mx-auto mt-4 max-w-3xl text-lg text-slate-400">
+        <p className="mx-auto mt-3 max-w-3xl px-2 text-sm text-slate-400 sm:mt-4 sm:px-0 sm:text-base md:text-lg">
           Generate engaging LinkedIn posts in seconds.
         </p>
       </div>
 
-      <div className="space-y-6">
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-12 items-stretch gap-8">
-          <div className="col-span-6">
+      <div className="space-y-5 sm:space-y-6">
+        {/* Studio + Preview */}
+        <div className="grid grid-cols-1 items-stretch gap-5 sm:gap-6 lg:grid-cols-2 lg:gap-8">
+          {/* Post Studio */}
+          <div className="min-w-0">
             <PostStudio
               formData={formData}
               setFormData={setFormData}
@@ -327,13 +329,14 @@ const NewPost = () => {
             />
           </div>
 
-          <div className="col-span-6">
+          {/* LinkedIn Preview */}
+          <div className="min-w-0">
             <LinkedInPreview formData={formData} />
           </div>
         </div>
 
         {/* Bottom Toolbar */}
-        <div>
+        <div className="w-full min-w-0">
           <EditorToolbar
             handleSaveDraft={handleSaveDraft}
             handleSchedule={() => setIsScheduleOpen(true)}
@@ -342,6 +345,8 @@ const NewPost = () => {
           />
         </div>
       </div>
+
+      {/* Schedule Modal */}
       <ScheduleModal
         isOpen={isScheduleOpen}
         onClose={() => setIsScheduleOpen(false)}

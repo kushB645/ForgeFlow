@@ -62,8 +62,6 @@ const Settings = () => {
 
       setLinkedin(data);
     } catch (error) {
-      console.log("LinkedIn status error:", error);
-
       toast.error(
         error?.response?.data?.message || "Failed to load LinkedIn account"
       );
@@ -124,8 +122,6 @@ const Settings = () => {
 
       toast.success("LinkedIn account disconnected");
     } catch (error) {
-      console.log("Disconnect error:", error);
-
       toast.error(
         error?.response?.data?.message || "Failed to disconnect LinkedIn"
       );
@@ -192,8 +188,6 @@ const Settings = () => {
 
       setIsPasswordOpen(false);
     } catch (error) {
-      console.log("Change password error:", error);
-
       toast.error(
         error?.response?.data?.message || "Failed to change password"
       );
@@ -214,8 +208,6 @@ const Settings = () => {
 
       toast.success("All drafts deleted successfully");
     } catch (error) {
-      console.log("Delete drafts error:", error);
-
       toast.error(error?.response?.data?.message || "Failed to delete drafts");
     }
   };
@@ -236,8 +228,6 @@ const Settings = () => {
 
       window.location.href = "/login";
     } catch (error) {
-      console.log("Delete account error:", error);
-
       toast.error(error?.response?.data?.message || "Failed to delete account");
     } finally {
       setDeletingAccount(false);
@@ -256,8 +246,6 @@ const Settings = () => {
 
       setIsAIModalOpen(false);
     } catch (error) {
-      console.log("AI preferences error:", error);
-
       toast.error(
         error?.response?.data?.message || "Failed to update AI preferences"
       );
@@ -361,17 +349,17 @@ const Settings = () => {
         />
 
         {/* Security */}
+        {/* Security */}
         <SettingCard
           icon={<FiShield />}
           title="Security"
           description="Protect your account and data."
           items={[
             "Change Password",
-            "Two-Factor Authentication",
-            "Login Sessions",
-            "Export Account Data",
+            "Secure Authentication",
+            "Account Protection",
           ]}
-          buttonText="Security Settings"
+          buttonText="Change Password"
           onClick={() => setIsPasswordOpen(true)}
         />
       </div>

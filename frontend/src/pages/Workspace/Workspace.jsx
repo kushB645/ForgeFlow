@@ -78,7 +78,7 @@ const Workspace = () => {
           precision or craft every pixel manually.
         </p>
       </section>
-      <div className="grid grid-cols-5 gap-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5">
         <StatCard title="Total Posts" value={stats.totalPosts} />
         <StatCard title="Drafts" value={stats.draft} />
         <StatCard title="Scheduled" value={stats.scheduled} />
@@ -86,7 +86,7 @@ const Workspace = () => {
         <StatCard title="Failed" value={stats.failed} />
       </div>
       ;{/* Quick Actions */}
-      <section className="mt-16 grid grid-cols-2 gap-8">
+      <section className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
         <div className="flex flex-col border border-slate-600 rounded-2xl bg-slate-900 backdrop-blur-2xl p-8">
           <div className="h-16 w-16 mt-4 mb-2 rounded-lg bg-slate-800 flex items-center justify-center">
             <HiSparkles size={32} className=" text-indigo-500" />
@@ -129,10 +129,10 @@ const Workspace = () => {
         </div>
       </section>
       {/* Drafts + Schedule */}
-      <section className="mt-16 grid grid-cols-3 gap-8">
+      <section className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Drafts */}
 
-        <div className="col-span-2">
+        <div className="lg:col-span-2">
           <div className="flex items-end justify-between">
             <div>
               <h2 className="text-2xl font-bold text-white">Recent Posts</h2>
@@ -159,53 +159,52 @@ const Workspace = () => {
               recentPosts.map((post) => (
                 <div
                   key={post._id}
-                  className="group flex items-center rounded-2xl border border-slate-700/70 bg-[#101A2C] px-6 py-5 transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/40 hover:bg-[#131F34] hover:shadow-lg hover:shadow-indigo-500/10"
+                  className="group relative flex items-center rounded-2xl border border-slate-700/70 bg-[#101A2C] px-6 py-5 transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/40 hover:bg-[#131F34] hover:shadow-lg hover:shadow-indigo-500/10"
                 >
                   {/* Image */}
                   {post.media?.[0]?.url ? (
                     <img
                       src={post.media[0].url}
                       alt="Post media"
-                      className="h-20 w-20 rounded-2xl object-cover"
+                      className="h-20 w-20 shrink-0 rounded-2xl object-cover md:h-16 md:w-16 lg:h-20 lg:w-20"
                     />
                   ) : (
-                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-800 text-xs text-slate-500">
+                    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-slate-800 text-xs text-slate-500 md:h-16 md:w-16 lg:h-20 lg:w-20">
                       No Image
                     </div>
                   )}
 
                   {/* Content */}
-                  <div className="ml-6 flex-1">
-                    <h3 className="text-xl font-semibold text-white">
+                  <div className="ml-6 min-w-0 flex-1 md:ml-4 lg:ml-6">
+                    <h3 className="pr-8 text-lg font-semibold leading-6 text-white lg:pr-0 lg:text-xl">
                       {post.content?.slice(0, 50)}
                       {post.content?.length > 50 ? "..." : ""}
                     </h3>
 
-                    <div className="mt-2 flex items-center text-sm text-slate-400">
+                    <div className="mt-2 flex flex-wrap items-center gap-x-2 text-xs text-slate-400 lg:text-sm">
                       <span>
                         {post.publishedAt
                           ? new Date(post.publishedAt).toLocaleString("en-IN")
                           : "Recently published"}
                       </span>
 
-                      <span className="mx-3 h-1 w-1 rounded-full bg-slate-500"></span>
+                      <span className="h-1 w-1 shrink-0 rounded-full bg-slate-500"></span>
 
                       <span>
-                        {post.content?.split(/\s+/).filter(Boolean).length || 0}{" "}
-                        words
+                        {post.content?.split(/\s+/).filter(Boolean).length || 0} words
                       </span>
                     </div>
-                  </div>
 
-                  {/* Status */}
-                  <span className="rounded-lg bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-emerald-400">
-                    Published
-                  </span>
+                    {/* Status - below metadata on mobile */}
+                    <span className="mt-2 inline-flex rounded-lg bg-emerald-500/10 px-2 py-1 text-[9px] font-semibold uppercase tracking-widest text-emerald-400 sm:absolute sm:right-12 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2 sm:px-3 sm:text-[10px]">
+                      Published
+                    </span>
+                  </div>
 
                   {/* More */}
                   <button
                     onClick={() => navigate(`/new-post/${post._id}`)}
-                    className="ml-5 rounded-lg p-2 text-slate-500 transition hover:bg-slate-700 hover:text-white"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-500 transition hover:bg-slate-700 hover:text-white"
                   >
                     <FiMoreVertical size={18} />
                   </button>
@@ -220,9 +219,9 @@ const Workspace = () => {
         <div>
           {/* Header */}
 
-          <div className="mb-5 flex items-end justify-between">
+          <div className="mb-5 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-white">
+              <h2 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">
                 Schedule
               </h2>
 
@@ -289,12 +288,12 @@ const Workspace = () => {
                       )}
                     </div>
 
-                    <h3 className="mt-4 text-lg font-semibold text-white leading-snug">
+                    <h3 className="mt-4 text-base font-semibold leading-snug text-white sm:text-lg">
                       {post.content?.slice(0, 60)}
                       {post.content?.length > 60 ? "..." : ""}
                     </h3>
 
-                    <div className="mt-3 flex items-center text-sm text-slate-400">
+                    <div className="mt-3 flex flex-wrap items-center text-xs text-slate-400 sm:text-sm">
                       <span>LinkedIn</span>
 
                       <span className="mx-3 h-1 w-1 rounded-full bg-slate-500"></span>
@@ -312,14 +311,14 @@ const Workspace = () => {
       </section>
       {/* Analytics */}
       <section className="mt-14">
-        <div className="flex items-center justify-between rounded-2xl border border-slate-800 bg-[#101827] px-8 py-6 transition-all duration-300 hover:border-slate-600 hover:bg-[#121C2D]">
-          <div className="flex items-center gap-6">
+        <div className="flex flex-col gap-6 rounded-2xl border border-slate-800 bg-[#101827] px-5 py-6 transition-all duration-300 hover:border-slate-600 hover:bg-[#121C2D] sm:px-8 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 items-center gap-4 sm:gap-6">
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-violet-500/10">
               <FiArrowRight className="text-violet-300" size={24} />
             </div>
 
             <div>
-              <h3 className="text-xl font-semibold tracking-tight text-white">
+              <h3 className="text-lg font-semibold tracking-tight text-white sm:text-xl">
                 Content Overview
               </h3>
 
@@ -329,11 +328,11 @@ const Workspace = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-5">
+          <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-start sm:gap-5">
             <div className="rounded-xl bg-slate-800 px-4 py-3 text-center">
               <p className="text-xs text-slate-500">Published</p>
 
-              <p className="text-xl font-semibold text-emerald-400">
+              <p className="text-lg font-semibold text-emerald-400 sm:text-xl">
                 {stats.published}
               </p>
             </div>

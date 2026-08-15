@@ -87,8 +87,6 @@ const CustomPost = () => {
       localStorage.removeItem("forgeflow_custom_hashtags");
 
       navigate("/content-library");
-
-      
     } catch (error) {
       console.log("Save draft error:", error);
 
@@ -200,65 +198,73 @@ const CustomPost = () => {
   };
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-6 sm:space-y-8">
       {/* Hero */}
-      <div className="text-center">
-        <span className="inline-flex rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1 text-sm font-medium text-violet-400">
+      <div className="px-2 text-center sm:px-0">
+        <span className="inline-flex rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-xs font-medium text-violet-400 sm:px-4 sm:text-sm">
           Manual Writing
         </span>
 
-        <h1 className="mt-5 text-5xl font-bold text-white">
+        <h1 className="mt-4 text-3xl font-bold text-white sm:mt-5 sm:text-4xl md:text-5xl">
           Custom{" "}
           <span className="bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
             Post
           </span>
         </h1>
 
-        <p className="mx-auto mt-4 max-w-3xl text-lg text-slate-400">
+        <p className="mx-auto mt-3 max-w-3xl px-2 text-sm text-slate-400 sm:mt-4 sm:px-0 sm:text-base md:text-lg">
           Write your LinkedIn post from scratch with a distraction-free editor.
         </p>
       </div>
 
       {/* Writing Stats */}
-      <WritingStats content={content} />
+      <div className="w-full min-w-0">
+        <WritingStats content={content} />
+      </div>
 
       {/* Editor + Preview */}
-      <div className="grid grid-cols-12 items-stretch gap-8">
+      <div className="grid grid-cols-1 items-stretch gap-5 sm:gap-6 lg:grid-cols-12 lg:gap-8">
         {/* Editor */}
-        <div className="col-span-7 h-[650px]">
-          <RichTextEditor
-            title={title}
-            setTitle={setTitle}
-            content={content}
-            setContent={setContent}
-            media={media}
-            setMedia={setMedia}
-            hashtags={hashtags}
-            setHashtags={setHashtags}
-          />
+        <div className="min-w-0 lg:col-span-7">
+          <div className="h-[550px] sm:h-[600px] lg:h-[650px]">
+            <RichTextEditor
+              title={title}
+              setTitle={setTitle}
+              content={content}
+              setContent={setContent}
+              media={media}
+              setMedia={setMedia}
+              hashtags={hashtags}
+              setHashtags={setHashtags}
+            />
+          </div>
         </div>
 
         {/* Preview */}
-        <div className="col-span-5 h-[650px]">
-          <LinkedInPreview
-            title={title}
-            content={content}
-            hashtags={hashtags}
-            media={media}
-          />
+        <div className="min-w-0 lg:col-span-5">
+          <div className="h-[550px] sm:h-[600px] lg:h-[650px]">
+            <LinkedInPreview
+              title={title}
+              content={content}
+              hashtags={hashtags}
+              media={media}
+            />
+          </div>
         </div>
       </div>
 
       {/* Bottom Toolbar */}
-      <EditorToolbar
-        handleClear={handleClear}
-        handleSaveDraft={handleSaveDraft}
-        handleSchedule={handleScheduleClick}
-        handlePublish={handlePublish}
-        saving={saving}
-        scheduling={scheduling}
-        publishing={publishing}
-      />
+      <div className="w-full min-w-0">
+        <EditorToolbar
+          handleClear={handleClear}
+          handleSaveDraft={handleSaveDraft}
+          handleSchedule={handleScheduleClick}
+          handlePublish={handlePublish}
+          saving={saving}
+          scheduling={scheduling}
+          publishing={publishing}
+        />
+      </div>
 
       {/* Schedule Modal */}
       <ScheduleModal

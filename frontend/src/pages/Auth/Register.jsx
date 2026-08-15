@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../../services/auth.service";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ const Register = () => {
 
       await registerUser(formData);
 
-      alert("Registration Successful");
+      toast.success("Registration successful");
 
       navigate("/login");
     } catch (error) {

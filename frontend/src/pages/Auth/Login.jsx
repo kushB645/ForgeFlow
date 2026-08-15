@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../../services/auth.service";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const Login = () => {
 
       await loginUser(form);
 
-      alert("Login Successful");
+      toast.success("Login successful");
 
       navigate("/workspace");
     } catch (error) {
