@@ -24,6 +24,18 @@ const ContentLibrary = () => {
 
   const [activeFilter, setActiveFilter] = useState("all");
 
+  const [filters, setFilters] = useState({
+    date: "all",
+    media: "all",
+    sort: "newest",
+  });
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    date: "all",
+    media: "all",
+    sort: "newest",
+  });
+
   const fetchPosts = async (status = "all") => {
     try {
       setLoading(true);
@@ -46,6 +58,21 @@ const ContentLibrary = () => {
   useEffect(() => {
     fetchPosts(activeFilter);
   }, [activeFilter]);
+
+  const handleApplyFilters = () => {
+    setAppliedFilters(filters);
+  };
+
+  const handleClearFilters = () => {
+    const defaultFilters = {
+      date: "all",
+      media: "all",
+      sort: "newest",
+    };
+
+    setFilters(defaultFilters);
+    setAppliedFilters(defaultFilters);
+  };
 
   const handleFilterChange = (filter) => {
     setActiveFilter(filter);
@@ -147,6 +174,50 @@ const ContentLibrary = () => {
     }
   };
 
+  const filteredPosts = [...posts]
+    .filter((post) => {
+      if (appliedFilters.date === "all") {
+        return true;
+      }
+
+      if (!post.createdAt) {
+        return false;
+      }
+
+      const postDate = new Date(post.createdAt);
+      const now = new Date();
+
+      const days = Number(appliedFilters.date);
+
+      const cutoffDate = new Date();
+      cutoffDate.setDate(now.getDate() - days);
+
+      return postDate >= cutoffDate;
+    })
+    .filter((post) => {
+      if (appliedFilters.media === "all") {
+        return true;
+      }
+
+      const hasMedia = Boolean(post.media);
+
+      if (appliedFilters.media === "with-media") {
+        return hasMedia;
+      }
+
+      return !hasMedia;
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.createdAt || 0);
+      const dateB = new Date(b.createdAt || 0);
+
+      if (appliedFilters.sort === "oldest") {
+        return dateA - dateB;
+      }
+
+      return dateB - dateA;
+    });
+
   const getScheduleDate = (date) => {
     if (!date) return "";
 
@@ -170,37 +241,64 @@ const ContentLibrary = () => {
   }
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex items-end justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Content Library</h1>
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold text-white sm:text-3xl">
+            Content Library
+          </h1>
 
-          <p className="mt-3 text-slate-400">
+          <p className="mt-2 text-sm text-slate-400 sm:mt-3 sm:text-base">
             Manage and organize your elite content drafts and assets.
           </p>
         </div>
 
-        <FilterTabs
-          activeFilter={activeFilter}
-          onFilterChange={handleFilterChange}
-        />
+        {/* Filters */}
+        <div className="w-full min-w-0 lg:w-auto">
+          <FilterTabs
+            activeFilter={activeFilter}
+            onFilterChange={handleFilterChange}
+            filters={{
+              date: filters.date,
+              media: filters.media,
+              sort: filters.sort,
+              setDate: (value) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  date: value,
+                })),
+              setMedia: (value) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  media: value,
+                })),
+              setSort: (value) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  sort: value,
+                })),
+            }}
+            onApplyFilters={handleApplyFilters}
+            onClearFilters={handleClearFilters}
+          />
+        </div>
       </div>
 
       {/* Posts */}
-      <div className="grid grid-cols-3 gap-8">
-        {posts.length === 0 ? (
-          <div className="col-span-3 rounded-2xl border border-dashed border-slate-700 p-12 text-center">
-            <h2 className="text-2xl font-semibold text-white">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+        {filteredPosts.length === 0 ? (
+          <div className="col-span-1 rounded-2xl border border-dashed border-slate-700 p-8 text-center sm:col-span-2 sm:p-10 lg:col-span-3 lg:p-12">
+            <h2 className="text-xl font-semibold text-white sm:text-2xl">
               No {activeFilter === "all" ? "" : activeFilter} posts yet
             </h2>
 
-            <p className="mt-2 text-slate-400">
+            <p className="mt-2 text-sm text-slate-400 sm:text-base">
               Create your first post to see it here.
             </p>
           </div>
         ) : (
-          posts.map((post) => (
+          filteredPosts.map((post) => (
             <PostCard
               key={post._id}
               post={post}
@@ -215,6 +313,8 @@ const ContentLibrary = () => {
 
         <CreateNewCard onClick={handleCreateNew} />
       </div>
+
+      {/* Schedule Modal */}
       <ScheduleModal
         isOpen={isRescheduleOpen}
         onClose={() => {

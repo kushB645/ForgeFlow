@@ -26,17 +26,19 @@ const Schedule = () => {
     }
   };
   return (
-    <section className="space-y-8">
+    <section className="space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex items-end justify-between">
-        <div>
-          <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1 text-sm font-medium text-cyan-400">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0">
+          <span className="inline-flex rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-400 sm:px-4 sm:text-sm">
             Content Planner
           </span>
 
-          <h1 className="mt-5 text-5xl font-bold text-white">Schedule</h1>
+          <h1 className="mt-4 text-3xl font-bold text-white sm:mt-5 sm:text-4xl lg:text-5xl">
+            Schedule
+          </h1>
 
-          <p className="mt-3 max-w-2xl text-lg text-slate-400">
+          <p className="mt-2 max-w-2xl text-sm text-slate-400 sm:mt-3 sm:text-base lg:text-lg">
             Plan, organize, and manage your LinkedIn publishing calendar with
             ease.
           </p>
@@ -45,7 +47,7 @@ const Schedule = () => {
         <button
           type="button"
           onClick={() => navigate("/new-post")}
-          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-500 px-6 py-3 font-semibold text-white transition hover:opacity-90"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-500 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 sm:w-fit sm:px-6"
         >
           <FiPlus />
           Schedule New
@@ -56,12 +58,12 @@ const Schedule = () => {
       <ScheduleStats posts={posts} />
 
       {/* Calendar + Upcoming */}
-      <div className="grid grid-cols-12 gap-8">
-        <div className="col-span-7">
+      <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-12 lg:gap-8">
+        <div className="min-w-0 lg:col-span-7">
           <CalendarWidget posts={posts} />
         </div>
 
-        <div className="col-span-5">
+        <div className="min-w-0 lg:col-span-5">
           <UpcomingPosts posts={posts} />
         </div>
       </div>

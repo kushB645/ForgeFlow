@@ -90,47 +90,54 @@ const ActivityTimeline = ({ posts = [] }) => {
   return (
     <div className="rounded-2xl border border-slate-800 bg-[#101827]">
       {/* Header */}
-      <div className="border-b border-slate-800 px-8 py-6">
-        <h2 className="text-2xl font-bold text-white">Recent Activity</h2>
+      <div className="border-b border-slate-800 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+        <h2 className="text-xl font-bold text-white sm:text-2xl">
+          Recent Activity
+        </h2>
 
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-xs text-slate-400 sm:text-sm">
           Track everything happening in your publishing workflow.
         </p>
       </div>
 
       {/* Timeline */}
-      <div className="px-8 py-8">
+      <div className="px-4 py-6 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
         {activities.length === 0 ? (
-          <div className="py-10 text-center text-slate-500">
+          <div className="py-8 text-center text-sm text-slate-500 sm:py-10">
             No recent activity yet.
           </div>
         ) : (
           <div className="relative">
             {/* Vertical Line */}
-            <div className="absolute left-6 top-0 h-full w-px bg-slate-800" />
+            <div className="absolute left-5 top-0 h-full w-px bg-slate-800 sm:left-6" />
 
-            <div className="space-y-8">
+            <div className="space-y-5 sm:space-y-6 lg:space-y-8">
               {activities.map((activity) => (
-                <div key={activity.id} className="relative flex gap-5">
+                <div
+                  key={activity.id}
+                  className="relative flex gap-3 sm:gap-4 lg:gap-5"
+                >
                   {/* Icon */}
                   <div
-                    className={`relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${activity.bg} ${activity.color}`}
+                    className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full sm:h-12 sm:w-12 ${activity.bg} ${activity.color}`}
                   >
                     {activity.icon}
                   </div>
 
                   {/* Content */}
-                  <div className="flex-1 rounded-xl border border-slate-800 bg-slate-900/50 p-5 transition hover:border-cyan-500/30">
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <h3 className="font-semibold text-white">
+                  <div className="min-w-0 flex-1 rounded-xl border border-slate-800 bg-slate-900/50 p-3 transition hover:border-cyan-500/30 sm:p-4 lg:p-5">
+                    <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+                      <div className="min-w-0">
+                        <h3 className="truncate text-sm font-semibold text-white sm:text-base">
                           {activity.title}
                         </h3>
 
-                        <p className="mt-2 text-slate-300">{activity.action}</p>
+                        <p className="mt-1 text-xs text-slate-300 sm:mt-2 sm:text-sm">
+                          {activity.action}
+                        </p>
                       </div>
 
-                      <span className="shrink-0 text-sm text-slate-500">
+                      <span className="shrink-0 text-[10px] text-slate-500 sm:text-xs lg:text-sm">
                         {activity.time}
                       </span>
                     </div>

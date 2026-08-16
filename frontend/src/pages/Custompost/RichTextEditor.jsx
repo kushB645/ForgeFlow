@@ -8,6 +8,8 @@ const RichTextEditor = ({
   setContent,
   media,
   setMedia,
+  attachment,
+  setAttachment,
   hashtags,
   setHashtags,
 }) => {
@@ -19,14 +21,19 @@ const RichTextEditor = ({
     setMedia(file);
   };
 
+  const handleAttachmentChange = (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    setAttachment(file);
+  };
+
   return (
     <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-[#101827] shadow-lg">
-
       {/* Header */}
       <div className="shrink-0 border-b border-slate-800 p-5">
-        <h2 className="text-2xl font-bold text-white">
-          Custom Post Editor
-        </h2>
+        <h2 className="text-2xl font-bold text-white">Custom Post Editor</h2>
 
         <p className="mt-2 text-sm leading-6 text-slate-400">
           Write, edit, and preview your LinkedIn content before publishing.
@@ -35,10 +42,7 @@ const RichTextEditor = ({
 
       {/* Formatting Toolbar */}
       <div className="shrink-0">
-        <FormattingToolbar
-          content={content}
-          setContent={setContent}
-        />
+        <FormattingToolbar content={content} setContent={setContent} />
       </div>
 
       {/* Title */}
@@ -84,15 +88,13 @@ const RichTextEditor = ({
       </div>
 
       {/* Bottom Actions */}
-      <div className="flex shrink-0 items-center justify-between border-t border-slate-800 px-4 py-3">
-
-        <div className="flex gap-3">
-
+      <div className="flex flex-col gap-2 border-t border-slate-800 px-2 py-3 sm:px-4 lg:flex-row lg:items-center lg:justify-between lg:gap-3">
+        {/* Buttons */}
+        <div className="flex min-w-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
           {/* Image */}
-          <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300 transition hover:border-cyan-500 hover:bg-cyan-500/10 hover:text-cyan-400">
+          <label className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-slate-700 px-2.5 py-2 text-xs font-medium text-slate-300 transition hover:border-cyan-500 hover:bg-cyan-500/10 hover:text-cyan-400 sm:gap-2 sm:px-3 sm:text-sm lg:px-4">
             <FiImage />
-
-            Image
+            <span>Image</span>
 
             <input
               type="file"
@@ -103,36 +105,43 @@ const RichTextEditor = ({
           </label>
 
           {/* Attachment */}
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300 transition hover:border-cyan-500 hover:bg-cyan-500/10 hover:text-cyan-400"
-          >
+          <label className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-slate-700 px-2.5 py-2 text-xs font-medium text-slate-300 transition hover:border-cyan-500 hover:bg-cyan-500/10 hover:text-cyan-400 sm:gap-2 sm:px-3 sm:text-sm lg:px-4">
             <FiPaperclip />
-            Attachment
-          </button>
+            <span>Attachment</span>
+
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,.txt"
+              onChange={handleAttachmentChange}
+              className="hidden"
+            />
+          </label>
 
           {/* Emoji */}
           <button
             type="button"
             onClick={() => setContent((prev) => `${prev} 😊`)}
-            className="flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300 transition hover:border-cyan-500 hover:bg-cyan-500/10 hover:text-cyan-400"
+            className="flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-700 px-2.5 py-2 text-xs font-medium text-slate-300 transition hover:border-cyan-500 hover:bg-cyan-500/10 hover:text-cyan-400 sm:gap-2 sm:px-3 sm:text-sm lg:px-4"
           >
             <FiSmile />
-            Emoji
+            <span>Emoji</span>
           </button>
-
         </div>
 
-        <div className="text-right">
-          <p className="max-w-[180px] truncate text-xs uppercase tracking-wider text-slate-500">
-            {media ? media.name : "No image selected"}
+        {/* File Status */}
+        <div className="flex min-w-0 items-center justify-end gap-2 text-right lg:block">
+          <p className="max-w-[180px] truncate text-[9px] uppercase tracking-wider text-slate-500 sm:text-[10px] lg:text-xs">
+            {attachment
+              ? attachment.name
+              : media
+                ? media.name
+                : "No file selected"}
           </p>
 
-          <p className="mt-1 text-xs font-medium text-emerald-400">
+          <p className="text-[9px] font-medium text-emerald-400 sm:text-xs lg:mt-1">
             Auto Saved
           </p>
         </div>
-
       </div>
     </section>
   );
