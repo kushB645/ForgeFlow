@@ -153,7 +153,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const option = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   };
 
   return res
@@ -191,9 +191,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   const option = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   };
-
   return res
     .status(200)
     .clearCookie("accessToken", option)
@@ -238,7 +237,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     const option = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     };
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -336,29 +335,26 @@ const updateAIPreferences = asyncHandler(async (req, res) => {
 });
 
 const getAIPreferences = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id)
-    .select("aiPreferences");
+  const user = await User.findById(req.user._id).select("aiPreferences");
 
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      user.aiPreferences,
-      "AI preferences fetched successfully"
-    )
-  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user.aiPreferences,
+        "AI preferences fetched successfully"
+      )
+    );
 });
 
 const updateNotificationPreferences = asyncHandler(async (req, res) => {
-  const {
-    publishingSuccess,
-    publishingFailure,
-    weeklySummary,
-    aiSuggestions,
-  } = req.body;
+  const { publishingSuccess, publishingFailure, weeklySummary, aiSuggestions } =
+    req.body;
 
   const user = await User.findByIdAndUpdate(
     req.user._id,
@@ -379,13 +375,15 @@ const updateNotificationPreferences = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      user.notificationPreferences,
-      "Notification preferences updated successfully"
-    )
-  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user.notificationPreferences,
+        "Notification preferences updated successfully"
+      )
+    );
 });
 
 const getNotificationPreferences = asyncHandler(async (req, res) => {
@@ -397,13 +395,15 @@ const getNotificationPreferences = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      user.notificationPreferences,
-      "Notification preferences fetched successfully"
-    )
-  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user.notificationPreferences,
+        "Notification preferences fetched successfully"
+      )
+    );
 });
 
 const updateAvatar = asyncHandler(async (req, res) => {
@@ -489,8 +489,6 @@ const deleteAccount = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, null, "Account deleted successfully"));
 });
-
-
 
 export {
   registerUser,
