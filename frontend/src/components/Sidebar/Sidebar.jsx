@@ -26,13 +26,11 @@ const Sidebar = ({ isOpen, onClose }) => {
       onClose();
       navigate("/login");
     } catch (error) {
-      // Keep the error silent for now.
-      // The logout failure doesn't need to be shown in the console.
+      // Keep logout failure silent
     }
   };
 
   const handleNavigation = () => {
-    // Close sidebar only on mobile.
     if (window.innerWidth < 1024) {
       onClose();
     }
@@ -57,10 +55,13 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-slate-800 bg-[#0F172A] transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-64 flex-col overflow-hidden border-r border-slate-800 bg-[#0F172A] transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
+      >
         {/* Logo */}
-        <div className="flex items-center justify-between gap-3 px-3 py-4">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="flex shrink-0 items-center justify-between gap-3 px-3 py-4">
+          <div className="flex min-w-0 items-center gap-3">
             <img
               src={logo}
               alt="ForgeFlow"
@@ -76,7 +77,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Mobile Close Button */}
+          {/* Mobile Close */}
           <button
             type="button"
             onClick={onClose}
@@ -86,8 +87,8 @@ const Sidebar = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav className="mt-8 px-3">
+        {/* Main Navigation */}
+        <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-6 scrollbar-hide">
           <ul className="space-y-2">
             <li>
               <NavLink
@@ -96,7 +97,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 onClick={handleNavigation}
               >
                 <FiGrid size={22} />
-                Workspace
+                <span>Workspace</span>
               </NavLink>
             </li>
 
@@ -107,7 +108,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 onClick={handleNavigation}
               >
                 <FiPlusSquare size={22} />
-                New Post
+                <span>New Post</span>
               </NavLink>
             </li>
 
@@ -118,7 +119,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 onClick={handleNavigation}
               >
                 <FiEdit3 size={22} />
-                Custom Post
+                <span>Custom Post</span>
               </NavLink>
             </li>
 
@@ -129,7 +130,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 onClick={handleNavigation}
               >
                 <FiFolder size={22} />
-                Content Library
+                <span>Content Library</span>
               </NavLink>
             </li>
 
@@ -140,61 +141,56 @@ const Sidebar = ({ isOpen, onClose }) => {
                 onClick={handleNavigation}
               >
                 <FiCalendar size={22} />
-                Schedule
+                <span>Schedule</span>
               </NavLink>
             </li>
           </ul>
         </nav>
 
-        {/* Settings */}
-        <div className="mt-auto border-slate-800 p-4">
-          <ul>
-            <li>
-              <NavLink
-                to="/settings"
-                className={navLinkClass}
-                onClick={handleNavigation}
-              >
-                <FiSettings size={22} />
-                Settings
-              </NavLink>
-            </li>
-          </ul>
-        </div>
+        {/* Bottom Section */}
+        <div className="shrink-0 border-t border-slate-800 p-4">
+          {/* Settings */}
+          <NavLink
+            to="/settings"
+            className={navLinkClass}
+            onClick={handleNavigation}
+          >
+            <FiSettings size={22} />
+            <span>Settings</span>
+          </NavLink>
 
-        {/* Profile */}
-        <div className="m-4 rounded-2xl border border-slate-700 bg-slate-800/50 p-4 backdrop-blur-xl">
-          <div className="flex items-center gap-3">
-            <img
-              src={
-                user?.avatar ||
-                "https://res.cloudinary.com/dbszrqojn/image/upload/v1785848370/download_yelfn0.jpg"
-              }
-              alt="Profile"
-              className="h-10 w-10 rounded-full object-cover"
-            />
+          {/* Profile */}
+          <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-800/50 p-4 backdrop-blur-xl">
+            <div className="flex items-center gap-3">
+              <img
+                src={
+                  user?.avatar ||
+                  "https://res.cloudinary.com/dbszrqojn/image/upload/v1785848370/download_yelfn0.jpg"
+                }
+                alt="Profile"
+                className="h-10 w-10 shrink-0 rounded-full object-cover"
+              />
 
-            <div className="min-w-0">
-              <h3 className="truncate text-base font-semibold text-white">
-                {user?.fullName}
-              </h3>
+              <div className="min-w-0">
+                <h3 className="truncate text-base font-semibold text-white">
+                  {user?.fullName || "User"}
+                </h3>
 
-              <p className="truncate text-sm text-slate-400">
-                @{user?.username}
-              </p>
+                <p className="truncate text-sm text-slate-400">
+                  @{user?.username || "username"}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Logout */}
-        <div className="px-4 pb-4">
+          {/* Logout */}
           <button
             type="button"
             onClick={handleLogout}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-slate-400 transition-all duration-200 hover:bg-red-500/10 hover:text-red-400"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-slate-400 transition-all duration-200 hover:bg-red-500/10 hover:text-red-400"
           >
             <FiLogOut size={18} />
-            Logout
+            <span>Logout</span>
           </button>
         </div>
       </aside>
