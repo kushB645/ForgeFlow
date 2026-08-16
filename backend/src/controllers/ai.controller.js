@@ -48,12 +48,6 @@ const generateLinkedInPost = asyncHandler(async (req, res) => {
     parsedResult.content = parsedResult.content.normalize("NFKC").trim();
   }
 
-  console.log("========== AI POST ==========");
-  console.log("Characters:", parsedResult.content.length);
-  console.log("UTF-8 bytes:", Buffer.byteLength(parsedResult.content, "utf8"));
-  console.log(parsedResult.content);
-  console.log("=============================");
-
   return res
     .status(200)
     .json(new ApiResponse(200, parsedResult, "Post generated successfully"));
