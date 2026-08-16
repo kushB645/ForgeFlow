@@ -1,12 +1,9 @@
-import {
-  FiGlobe,
-  FiThumbsUp,
-  FiMessageCircle,
-  FiRepeat,
-  FiSend,
-} from "react-icons/fi";
+import { FiGlobe, FiThumbsUp, FiMessageCircle, FiSend } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
 
 const LinkedInPreview = ({ title, content, hashtags, media }) => {
+  const { user } = useAuth();
+
   const hashtagList = hashtags
     ? hashtags
         .split(",")
@@ -15,7 +12,10 @@ const LinkedInPreview = ({ title, content, hashtags, media }) => {
     : [];
 
   return (
-    <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-[#101827] shadow-lg">
+    <section
+      id="linkedin-preview"
+      className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-[#101827] shadow-lg"
+    >
       {/* Header */}
       <div className="shrink-0 border-b border-slate-800 p-5">
         <h2 className="text-xl font-semibold text-white">LinkedIn Preview</h2>
@@ -30,20 +30,24 @@ const LinkedInPreview = ({ title, content, hashtags, media }) => {
         <div className="rounded-xl border border-slate-700 bg-slate-900 p-5">
           {/* Profile */}
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 text-lg font-bold text-white">
-              KB
-            </div>
+            <img
+              src={user?.avatar}
+              alt={user?.fullName || "Profile"}
+              className="h-12 w-12 shrink-0 rounded-full object-cover"
+            />
 
-            <div>
-              <h3 className="font-semibold text-white">Kush Bhardwaj</h3>
+            <div className="min-w-0">
+              <h3 className="truncate font-semibold text-white">
+                {user?.fullName || "Your Name"}
+              </h3>
 
-              <p className="text-sm text-slate-400">
-                Frontend Developer • 3rd Year CSE Student
+              <p className="truncate text-sm text-slate-400">
+                {user?.headline || "Frontend Developer"}
               </p>
 
               <div className="mt-1 flex items-center gap-1 text-xs text-slate-500">
                 <span>Now</span>
-                <FiGlobe />
+                <FiGlobe size={12} />
               </div>
             </div>
           </div>
@@ -95,7 +99,6 @@ const LinkedInPreview = ({ title, content, hashtags, media }) => {
 
           {/* Actions */}
           <div className="mt-3 grid grid-cols-3 border-t border-slate-800 pt-3">
-            {/* Like */}
             <button
               type="button"
               className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400"
@@ -104,7 +107,6 @@ const LinkedInPreview = ({ title, content, hashtags, media }) => {
               <span>Like</span>
             </button>
 
-            {/* Comment */}
             <button
               type="button"
               className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400"
@@ -113,7 +115,6 @@ const LinkedInPreview = ({ title, content, hashtags, media }) => {
               <span>Comment</span>
             </button>
 
-            {/* Send */}
             <button
               type="button"
               className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-sm text-slate-400 transition hover:bg-slate-800 hover:text-cyan-400"

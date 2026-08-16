@@ -48,7 +48,16 @@ const EditorToolbar = ({
             </span>
           </button>
 
-          <button className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-indigo-500 hover:bg-indigo-500/10 hover:text-indigo-400 sm:px-4 sm:text-sm">
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById("linkedin-preview")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
+            className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-indigo-500 hover:bg-indigo-500/10 hover:text-indigo-400 sm:px-4 sm:text-sm"
+          >
             <span className="flex items-center justify-center gap-2">
               <FiEye />
               Preview
