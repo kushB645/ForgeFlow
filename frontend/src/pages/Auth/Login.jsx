@@ -34,53 +34,85 @@ const Login = () => {
     } catch (error) {
       console.log(error);
 
-      alert(
-        error.response?.data?.message ||
-          "Login Failed"
-      );
+      toast.error(error.response?.data?.message || "Login Failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0B1220]">
+    <div className="flex min-h-screen items-center justify-center bg-[#0B1220] px-4 py-8 sm:px-6">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md rounded-2xl bg-slate-900 p-8 shadow-lg"
+        className="w-full max-w-md rounded-2xl border border-slate-800 bg-[#101827] p-5 shadow-2xl sm:p-7 md:p-8"
       >
-        <h1 className="mb-6 text-center text-3xl font-bold text-white">
-          Login
-        </h1>
+        {/* Header */}
+        <div className="mb-7 text-center">
+          <h1 className="text-2xl font-bold text-white sm:text-3xl">
+            Welcome Back
+          </h1>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          className="mb-4 w-full rounded-lg border border-slate-700 bg-slate-800 p-3 text-white"
-        />
+          <p className="mt-2 text-sm text-slate-400">
+            Sign in to continue to ForgeFlow
+          </p>
+        </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          className="mb-6 w-full rounded-lg border border-slate-700 bg-slate-800 p-3 text-white"
-        />
+        {/* Email */}
+        <div className="mb-4">
+          <label
+            htmlFor="email"
+            className="mb-2 block text-sm font-medium text-slate-300"
+          >
+            Email
+          </label>
 
+          <input
+            id="email"
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/10 sm:text-base"
+          />
+        </div>
+
+        {/* Password */}
+        <div className="mb-6">
+          <label
+            htmlFor="password"
+            className="mb-2 block text-sm font-medium text-slate-300"
+          >
+            Password
+          </label>
+
+          <input
+            id="password"
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/10 sm:text-base"
+          />
+        </div>
+
+        {/* Button */}
         <button
-          className="w-full rounded-lg bg-purple-600 py-3 font-semibold text-white hover:bg-purple-700"
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-violet-500 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 sm:py-3.5 sm:text-base"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        <p className="mt-5 text-center text-slate-400">
+        {/* Register */}
+        <p className="mt-6 text-center text-sm text-slate-400 sm:text-base">
           Don't have an account?{" "}
           <Link
-            className="text-purple-400"
+            className="font-medium text-cyan-400 transition hover:text-cyan-300"
             to="/register"
           >
             Register

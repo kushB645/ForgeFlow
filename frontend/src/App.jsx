@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar/Sidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import LandingPage from "./pages/LandingPage/LandingPage";
 import Workspace from "./pages/Workspace/Workspace";
 import NewPost from "./pages/Newpost/NewPost";
 import CustomPost from "./pages/Custompost/CustomPost";
@@ -17,7 +17,7 @@ function App() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const hideSidebar = ["/login", "/register"].includes(location.pathname);
+  const hideSidebar = ["/", "/login", "/register"].includes(location.pathname);
 
   return (
     <div className="min-h-screen bg-[#0B1220]">
@@ -42,7 +42,7 @@ function App() {
           </button>
         )}
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<LandingPage />} />
 
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
