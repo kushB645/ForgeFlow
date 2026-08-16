@@ -8,8 +8,10 @@ dbConnection()
     // Start Worker after DB connection
     await import("./queue/post.worker.js");
 
-    app.listen(process.env.PORT || 8000, () => {
-      console.log(`Server is running on port ${process.env.PORT}`);
+    const PORT = process.env.PORT || 8000;
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server is running on port ${PORT}`);
     });
 
     app.on("error", (error) => {
@@ -20,3 +22,4 @@ dbConnection()
   .catch((err) => {
     console.log("Error in DB connection:", err);
   });
+     
