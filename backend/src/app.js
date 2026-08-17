@@ -4,6 +4,10 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
+app.get("/", (req, res) => {
+  res.send("ForgeFlow API is running...");
+});
+
 const corsOptions = {
   origin: "https://forgeflow01.vercel.app",
   credentials: true,
@@ -11,12 +15,8 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-app.use(cors(corsOptions));
-
-app.options(/.*/, cors(corsOptions));
-
 app.use((req, res, next) => {
-  console.log("=================================");
+  console.log("========== REQUEST ==========");
   console.log("METHOD:", req.method);
   console.log("URL:", req.originalUrl);
   console.log("ORIGIN:", req.headers.origin);
@@ -24,10 +24,17 @@ app.use((req, res, next) => {
     "ACCESS CONTROL REQUEST METHOD:",
     req.headers["access-control-request-method"]
   );
-  console.log("=================================");
+  console.log(
+    "ACCESS CONTROL REQUEST HEADERS:",
+    req.headers["access-control-request-headers"]
+  );
+  console.log("=============================");
 
   next();
 });
+
+app.use(cors(corsOptions));
+
 
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
