@@ -9,11 +9,7 @@ export const getPosts = async (params) => {
 };
 
 export const createPost = async (formData) => {
-  const response = await api.post("/posts", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const response = await api.post("/posts", formData);
 
   return response.data.data;
 };
@@ -21,12 +17,7 @@ export const createPost = async (formData) => {
 export const updatePost = async (postId, formData) => {
   const response = await api.patch(
     `/posts/${postId}`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    formData
   );
 
   return response.data.data;
