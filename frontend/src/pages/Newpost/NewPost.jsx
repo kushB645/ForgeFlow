@@ -239,6 +239,12 @@ const NewPost = () => {
   };
 
   const handleSchedule = async (scheduledAt) => {
+    console.log("========== HANDLE SCHEDULE START ==========");
+    console.log("scheduledAt:", scheduledAt);
+    console.log("postId:", postId);
+    console.log("formData:", formData);
+    console.log("media:", media);
+
     try {
       if (!formData.content.trim()) {
         return toast.error("Post content is empty");
@@ -248,6 +254,7 @@ const NewPost = () => {
 
       // Create post if it doesn't exist
       if (!currentPostId) {
+        console.log("Creating new post...");
         const form = new FormData();
 
         form.append("content", formData.content);
@@ -261,6 +268,8 @@ const NewPost = () => {
 
         currentPostId = createdPost._id;
       } else {
+        console.log("Updating existing post...");
+        console.log("currentPostId:", currentPostId);
         // Save latest changes
         const form = new FormData();
 
@@ -271,13 +280,28 @@ const NewPost = () => {
           form.append("media", media);
         }
 
+        console.log("ABOUT TO CALL updatePost");
+        console.log("FormData contents:");
+
+        for (const [key, value] of form.entries()) {
+          console.log(key, value);
+        }
+
         await updatePost(currentPostId, form);
+
+        console.log("updatePost FINISHED");
       }
 
       // Schedule the post
+      console.log("ABOUT TO CALL schedulePost");
+      console.log("currentPostId:", currentPostId);
+      console.log("scheduledAt:", scheduledAt);
+
       await schedulePost(currentPostId, {
         scheduledAt,
       });
+
+      console.log("schedulePost FINISHED");
 
       toast.success("Post scheduled successfully");
 
