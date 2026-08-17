@@ -4,10 +4,6 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("ForgeFlow API is running...");
-});
-
 const corsOptions = {
   origin: "https://forgeflow01.vercel.app",
   credentials: true,
@@ -17,14 +13,16 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Explicit OPTIONS / preflight handling
-app.options(/.*/, cors(corsOptions));
+app.get("/", (req, res) => {
+  res.send("ForgeFlow API is running...");
+});
 
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
+// Routes
 import userRouter from "./routes/user.routes.js";
 import linkedinRouter from "./routes/linkedin.routes.js";
 import postRouter from "./routes/post.routes.js";
