@@ -76,66 +76,66 @@ It combines AI-powered content generation, manual editing, LinkedIn OAuth 2.0, m
 
 frontend/
 └── src/
-├── assets/
-├── components/
-│ ├── Sidebar/
-│ ├── Navbar/
-│ ├── Button/
-│ ├── Card/
-│ ├── Loader/
-│ ├── LinkedInPreview/
-│ └── ScheduleModal/
-│
-├── hooks/
-├── pages/
-│ ├── Workspace/
-│ ├── NewPost/
-│ ├── ContentLibrary/
-│ ├── Schedule/
-│ └── Settings/
-│
-├── services/
-│ ├── api.js
-│ ├── auth.service.js
-│ ├── post.service.js
-│ ├── ai.service.js
-│ └── settings.service.js
-│
-├── layouts/
-├── App.jsx
-├── main.jsx
-└── index.css
-
+    ├── assets/
+    ├── components/
+    │   ├── Sidebar/
+    │   ├── Navbar/
+    │   ├── Button/
+    │   ├── Card/
+    │   ├── Loader/
+    │   ├── LinkedInPreview/
+    │   └── ScheduleModal/
+    │
+    ├── hooks/
+    ├── pages/
+    │   ├── Workspace/
+    │   ├── NewPost/
+    │   ├── ContentLibrary/
+    │   ├── Schedule/
+    │   └── Settings/
+    │
+    ├── services/
+    │   ├── api.js
+    │   ├── auth.service.js
+    │   ├── post.service.js
+    │   ├── ai.service.js
+    │   └── settings.service.js
+    │
+    ├── layouts/
+    ├── App.jsx
+    ├── main.jsx
+    └── index.css
+    
 backend/
 ├── controllers/
 ├── models/
-│ ├── user.model.js
-│ ├── post.model.js
-│ └── linkedinAccount.model.js
+│   ├── user.model.js
+│   ├── post.model.js
+│   └── linkedinAccount.model.js
 │
 ├── routes/
-│ ├── user.routes.js
-│ ├── post.routes.js
-│ ├── linkedin.routes.js
-│ └── ...
+│   ├── user.routes.js
+│   ├── post.routes.js
+│   ├── linkedin.routes.js
+│   └── ...
 │
 ├── middleware/
 ├── services/
-│ └── linkedin.service.js
+│   └── linkedin.service.js
 │
 ├── queue/
-│ ├── connection.js
-│ ├── post.queue.js
-│ └── post.worker.js
+│   ├── connection.js
+│   ├── post.queue.js
+│   └── post.worker.js
 │
 ├── utils/
-│ ├── cloudinary.js
-│ ├── asyncHandler.js
-│ ├── apiError.js
-│ └── apiResponse.js
+│   ├── cloudinary.js
+│   ├── asyncHandler.js
+│   ├── apiError.js
+│   └── apiResponse.js
 │
 ├── db/
-│ └── index.js
+│   └── index.js
 │
 ├── app.js
 ├── index.js
