@@ -8,7 +8,7 @@ It combines AI-powered content generation, manual editing, LinkedIn OAuth 2.0, m
 
 ---
 
-## 📑 Table of Contents
+## 📑 Table of Content
 
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
