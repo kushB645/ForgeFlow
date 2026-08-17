@@ -1,37 +1,33 @@
 import express from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 
 const app = express();
 
-const allowedOrigin = "https://forgeflow01.vercel.app";
+const corsOptions = {
+  origin: "https://forgeflow01.vercel.app",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", allowedOrigin);
-  res.header("Access-Control-Allow-Credentials", "true");
+app.use(cors(corsOptions));
 
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-  );
-
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
-  }
-
-  next();
-});
+app.options(/.*/, cors(corsOptions));
 
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+
 app.use(express.static("public"));
+
 app.use(cookieParser());
 
+app.get("/", (req, res) => {
+  res.send("ForgeFlow API is running...");
+});
+
 // routes
+
 import userRouter from "./routes/user.routes.js";
 import linkedinRouter from "./routes/linkedin.routes.js";
 import postRouter from "./routes/post.routes.js";
