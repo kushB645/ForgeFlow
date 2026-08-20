@@ -239,11 +239,6 @@ const NewPost = () => {
   };
 
   const handleSchedule = async (scheduledAt) => {
-    console.log("========== HANDLE SCHEDULE START ==========");
-    console.log("scheduledAt:", scheduledAt);
-    console.log("postId:", postId);
-    console.log("formData:", formData);
-    console.log("media:", media);
 
     try {
       if (!formData.content.trim()) {
