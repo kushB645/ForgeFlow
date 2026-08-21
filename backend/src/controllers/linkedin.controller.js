@@ -1,6 +1,7 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
+import redis from "../config/redis.js";
 import crypto from "crypto";
 import { LinkedInAccount } from "../models/linkedinAccount.model.js";
 import {
@@ -12,18 +13,14 @@ import {
 import { Post } from "../models/post.model.js";
 
 const connectLinkedIn = asyncHandler(async (req, res) => {
-  const state = crypto.randomBytes(16).toString("hex");
+  const state = crypto.randomBytes(32).toString("hex");
 
-  const option = {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    path: "/",
-    maxAge: 10 * 60 * 1000,
-  };
-
-  res.cookie("linkedin_state", state, option);
-  res.cookie("oauth_user", req.user._id.toString(), option);
+  await redis.set(
+    `linkedin:oauth:${state}`,
+    req.user._id.toString(),
+    "EX",
+    600
+  );
 
   const authUrl = generateAuthUrl(state);
 
@@ -43,38 +40,25 @@ const connectLinkedIn = asyncHandler(async (req, res) => {
 });
 
 const linkedinCallback = asyncHandler(async (req, res) => {
-  //Read the query parameters
-  console.log("Cookies:", req.cookies);
+  console.log("Query:", req.query);
 
   const { code, state } = req.query;
-
-  //verify
 
   if (!code || !state) {
     throw new ApiError(400, "Code and state are required");
   }
 
-  //Compare state
+  const userId = await redis.get(`linkedin:oauth:${state}`);
 
-  const savedState = req.cookies.linkedin_state;
-
-  if (!savedState) {
-    throw new ApiError(400, "OAuth state not found");
+  if (!userId) {
+    throw new ApiError(400, "OAuth state expired or invalid");
   }
 
-  if (savedState !== state) {
-    throw new ApiError(403, "Invalid OAuth state");
-  }
+  await redis.del(`linkedin:oauth:${state}`);
 
   const tokenData = await exchangeCodeForToken(code);
 
   const profile = await getLinkedInProfile(tokenData.access_token);
-
-  const userId = req.cookies.oauth_user;
-
-  if (!userId) {
-    throw new ApiError(400, "OAuth user cookie not found");
-  }
 
   const linkedinAccount = await LinkedInAccount.findOneAndUpdate(
     { owner: userId },
@@ -96,29 +80,8 @@ const linkedinCallback = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Failed to connect LinkedIn account");
   }
 
-  const clearCookieOptions = {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    path: "/",
-  };
-
-  res.clearCookie("linkedin_state", clearCookieOptions);
-  res.clearCookie("oauth_user", clearCookieOptions);
-
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      {
-        _id: linkedinAccount._id,
-        linkedinId: linkedinAccount.linkedinId,
-        profilePicture: linkedinAccount.profilePicture,
-        profileUrl: linkedinAccount.profileUrl,
-        isConnected: linkedinAccount.isConnected,
-        expiresAt: linkedinAccount.expiresAt,
-      },
-      "LinkedIn connected successfully"
-    )
+  return res.redirect(
+    `${process.env.FRONTEND_URL}/settings?linkedin=connected`
   );
 });
 
