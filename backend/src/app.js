@@ -9,29 +9,11 @@ app.get("/", (req, res) => {
 });
 
 const corsOptions = {
-  origin: "https://forgeflow01.vercel.app",
+  origin: process.env.CORS_ORIGIN,
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
-
-app.use((req, res, next) => {
-  console.log("========== REQUEST ==========");
-  console.log("METHOD:", req.method);
-  console.log("URL:", req.originalUrl);
-  console.log("ORIGIN:", req.headers.origin);
-  console.log(
-    "ACCESS CONTROL REQUEST METHOD:",
-    req.headers["access-control-request-method"]
-  );
-  console.log(
-    "ACCESS CONTROL REQUEST HEADERS:",
-    req.headers["access-control-request-headers"]
-  );
-  console.log("=============================");
-
-  next();
-});
 
 app.use(cors(corsOptions));
 
