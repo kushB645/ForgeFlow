@@ -29,7 +29,8 @@ const Login = () => {
       setLoading(true);
 
       // Login and set authentication cookies
-      await loginUser(form);
+      const loginResponse = await loginUser(form);
+      console.log("LOGIN RESPONSE:", loginResponse);
 
       // Immediately get the logged-in user
       const currentUser = await getCurrentUser();
