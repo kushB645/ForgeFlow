@@ -10,6 +10,7 @@ import { changePassword } from "../../services/settings.service";
 import {
   getLinkedInAccount,
   disconnectLinkedIn,
+  connectLinkedIn,
 } from "../../services/linkedin.service";
 import {
   updateAIPreferences,
@@ -107,8 +108,16 @@ const Settings = () => {
     fetchNotificationPreferences();
   }, []);
 
-  const handleConnectLinkedIn = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/linkedin/connect`;
+  const handleConnectLinkedIn = async () => {
+    try {
+      const authUrl = await connectLinkedIn();
+
+      window.location.href = authUrl;
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to connect LinkedIn"
+      );
+    }
   };
 
   const handleDisconnectLinkedIn = async () => {

@@ -1,5 +1,11 @@
 import api from "./api";
 
+export const connectLinkedIn = async () => {
+  const response = await api.get("/linkedin/connect");
+
+  return response.data.data.authUrl;
+};
+
 export const getLinkedInAccount = async () => {
   const response = await api.get("/linkedin/status");
 

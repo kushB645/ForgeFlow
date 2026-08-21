@@ -12,16 +12,12 @@ import {
 import { Post } from "../models/post.model.js";
 
 const connectLinkedIn = asyncHandler(async (req, res) => {
-  // 1. Generate random state
-
   const state = crypto.randomBytes(16).toString("hex");
-
-  // storing it in cookies
 
   const option = {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
     path: "/",
     maxAge: 10 * 60 * 1000,
   };
@@ -29,16 +25,21 @@ const connectLinkedIn = asyncHandler(async (req, res) => {
   res.cookie("linkedin_state", state, option);
   res.cookie("oauth_user", req.user._id.toString(), option);
 
-  console.log("Generated State:", state);
-  console.log("OAuth cookies set for user:", req.user._id);
-
   const authUrl = generateAuthUrl(state);
 
   if (!authUrl) {
     throw new ApiError(500, "Failed to generate LinkedIn authorization URL");
   }
 
-  return res.redirect(authUrl);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { authUrl },
+        "LinkedIn authorization URL generated successfully"
+      )
+    );
 });
 
 const linkedinCallback = asyncHandler(async (req, res) => {
