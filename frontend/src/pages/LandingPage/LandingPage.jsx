@@ -6,6 +6,7 @@ import {
   FiSend,
   FiStar,
 } from "react-icons/fi";
+import logo from "../../assets/logo.png";
 
 const features = [
   {
@@ -48,9 +49,11 @@ const LandingPage = () => {
             onClick={() => navigate("/")}
             className="flex items-center gap-2"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-400/10 text-cyan-400">
-              <span className="text-lg">▣</span>
-            </div>
+            <img
+              src={logo}
+              alt="ForgeFlow Logo"
+              className="h-8 w-8 rounded-lg object-contain"
+            />
 
             <span className="text-xl font-bold tracking-tight">
               Forge<span className="text-cyan-400">Flow</span>
