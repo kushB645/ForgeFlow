@@ -72,6 +72,10 @@ const linkedinCallback = asyncHandler(async (req, res) => {
 
   const userId = req.cookies.oauth_user;
 
+  if (!userId) {
+    throw new ApiError(400, "OAuth user cookie not found");
+  }
+
   const linkedinAccount = await LinkedInAccount.findOneAndUpdate(
     { owner: userId },
     {
@@ -92,8 +96,15 @@ const linkedinCallback = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Failed to connect LinkedIn account");
   }
 
-  res.clearCookie("linkedin_state");
-  res.clearCookie("oauth_user");
+  const clearCookieOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: "/",
+  };
+
+  res.clearCookie("linkedin_state", clearCookieOptions);
+  res.clearCookie("oauth_user", clearCookieOptions);
 
   return res.status(200).json(
     new ApiResponse(
