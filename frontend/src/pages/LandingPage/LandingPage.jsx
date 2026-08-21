@@ -49,15 +49,17 @@ const LandingPage = () => {
             onClick={() => navigate("/")}
             className="flex items-center gap-2"
           >
-            <img
-              src={logo}
-              alt="ForgeFlow Logo"
-              className="h-8 w-8 rounded-lg object-contain"
-            />
+            <div className="flex items-center gap-2">
+              <img
+                src={logo}
+                alt="ForgeFlow Logo"
+                className="h-8 w-8 object-contain"
+              />
 
-            <span className="text-xl font-bold tracking-tight">
-              Forge<span className="text-cyan-400">Flow</span>
-            </span>
+              <span className="text-xl font-bold tracking-tight">
+                Forge<span className="text-cyan-400">Flow</span>
+              </span>
+            </div>
           </button>
 
           {/* Navigation */}
