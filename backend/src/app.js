@@ -8,6 +8,14 @@ app.get("/", (req, res) => {
   res.send("ForgeFlow API is running...");
 });
 
+app.get("/api/v1/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "ForgeFlow API is healthy",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 const corsOptions = {
   origin: process.env.CORS_ORIGIN,
   credentials: true,
@@ -24,10 +32,6 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 
 app.use(cookieParser());
-
-app.get("/", (req, res) => {
-  res.send("ForgeFlow API is running...");
-});
 
 // routes
 
