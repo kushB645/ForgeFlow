@@ -48,13 +48,21 @@ const linkedinCallback = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Code and state are required");
   }
 
-  const userId = await redis.get(`linkedin:oauth:${state}`);
+  // Get user ID from Redis
+  const redisKey = `linkedin:oauth:${state}`;
+
+  console.log("Redis key:", redisKey);
+
+  const userId = await redis.get(redisKey);
+
+  console.log("Redis userId:", userId);
 
   if (!userId) {
     throw new ApiError(400, "OAuth state expired or invalid");
   }
 
-  await redis.del(`linkedin:oauth:${state}`);
+  // State is valid, so delete it
+  await redis.del(redisKey);
 
   const tokenData = await exchangeCodeForToken(code);
 
