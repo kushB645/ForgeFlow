@@ -11,6 +11,7 @@ import Schedule from "./pages/Schedule/Schedule";
 import Settings from "./pages/Setting/Settings";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const location = useLocation();
@@ -21,6 +22,18 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#0B1220]">
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#101827",
+            color: "#fff",
+            border: "1px solid #1e293b",
+          },
+        }}
+      />
+      
       {!hideSidebar && (
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       )}

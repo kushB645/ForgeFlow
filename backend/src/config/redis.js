@@ -1,7 +1,13 @@
 import Redis from "ioredis";
 
-const redis = new Redis(process.env.REDIS_URL, {
-  tls: {},
+const redisUrl = process.env.REDIS_URL;
+
+if (!redisUrl) {
+  throw new Error("REDIS_URL is not defined");
+}
+
+const redis = new Redis(redisUrl, {
+  ...(redisUrl.startsWith("rediss://") ? { tls: {} } : {}),
 });
 
 redis.on("connect", () => {
@@ -14,6 +20,10 @@ redis.on("ready", () => {
 
 redis.on("error", (error) => {
   console.error("App Redis error:", error);
+});
+
+redis.on("close", () => {
+  console.log("App Redis connection closed");
 });
 
 export default redis;
