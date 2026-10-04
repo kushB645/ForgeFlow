@@ -40,8 +40,6 @@ const connectLinkedIn = asyncHandler(async (req, res) => {
 });
 
 const linkedinCallback = asyncHandler(async (req, res) => {
-  console.log("Query:", req.query);
-
   const { code, state } = req.query;
 
   if (!code || !state) {
@@ -50,12 +48,7 @@ const linkedinCallback = asyncHandler(async (req, res) => {
 
   // Get user ID from Redis
   const redisKey = `linkedin:oauth:${state}`;
-
-  console.log("Redis key:", redisKey);
-
   const userId = await redis.get(redisKey);
-
-  console.log("Redis userId:", userId);
 
   if (!userId) {
     throw new ApiError(400, "OAuth state expired or invalid");
@@ -88,8 +81,14 @@ const linkedinCallback = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Failed to connect LinkedIn account");
   }
 
+  const frontendUrl = process.env.FRONTEND_URL;
+
+  if (!frontendUrl) {
+    throw new ApiError(500, "Frontend URL is not configured");
+  }
+
   return res.redirect(
-    `${process.env.FRONTEND_URL}/settings?linkedin=connected`
+    new URL("/settings?linkedin=connected", frontendUrl).toString()
   );
 });
 

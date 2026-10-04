@@ -1,10 +1,13 @@
 import Redis from "ioredis";
+import normalizeRedisUrl from "./normalizeRedisUrl.js";
 
-const redisUrl = process.env.REDIS_URL;
+const redisUrlValue = process.env.REDIS_URL;
 
-if (!redisUrl) {
+if (!redisUrlValue) {
   throw new Error("REDIS_URL is not defined");
 }
+
+const redisUrl = normalizeRedisUrl(redisUrlValue);
 
 const redis = new Redis(redisUrl, {
   ...(redisUrl.startsWith("rediss://") ? { tls: {} } : {}),
