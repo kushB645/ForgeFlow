@@ -2,7 +2,13 @@ import { useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar/Sidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ScrollToTop from "./components/ScrollToTop";
 import LandingPage from "./pages/LandingPage/LandingPage";
+import AboutPage from "./pages/About/AboutPage";
+import WhyForgeFlowPage from "./pages/WhyForgeFlow/WhyForgeFlowPage";
+import HowItWorksPage from "./pages/HowItWorks/HowItWorksPage";
+import PricingPage from "./pages/Pricing/PricingPage";
+import ContactPage from "./pages/Contact/ContactPage";
 import Workspace from "./pages/Workspace/Workspace";
 import NewPost from "./pages/Newpost/NewPost";
 import CustomPost from "./pages/Custompost/CustomPost";
@@ -18,10 +24,23 @@ function App() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const hideSidebar = ["/", "/login", "/register"].includes(location.pathname);
+  const publicRoutes = [
+    "/",
+    "/about",
+    "/why",
+    "/why-how",
+    "/how-it-works",
+    "/pricing",
+    "/contact",
+    "/login",
+    "/register",
+  ];
+
+  const hideSidebar = publicRoutes.includes(location.pathname);
 
   return (
     <div className="min-h-screen bg-[#0B1220]">
+      <ScrollToTop />
       <Toaster
         position="top-right"
         toastOptions={{
@@ -56,6 +75,12 @@ function App() {
         )}
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/why" element={<WhyForgeFlowPage />} />
+          <Route path="/why-how" element={<WhyForgeFlowPage />} />
+          <Route path="/how-it-works" element={<HowItWorksPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/contact" element={<ContactPage />} />
 
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
