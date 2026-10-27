@@ -9,6 +9,8 @@ import WhyForgeFlowPage from "./pages/WhyForgeFlow/WhyForgeFlowPage";
 import HowItWorksPage from "./pages/HowItWorks/HowItWorksPage";
 import PricingPage from "./pages/Pricing/PricingPage";
 import ContactPage from "./pages/Contact/ContactPage";
+import PrivacyPolicyPage from "./pages/Legal/PrivacyPolicyPage";
+import TermsPage from "./pages/Legal/TermsPage";
 import Workspace from "./pages/Workspace/Workspace";
 import NewPost from "./pages/Newpost/NewPost";
 import CustomPost from "./pages/Custompost/CustomPost";
@@ -32,6 +34,8 @@ function App() {
     "/how-it-works",
     "/pricing",
     "/contact",
+    "/privacy",
+    "/terms",
     "/login",
     "/register",
   ];
@@ -81,6 +85,8 @@ function App() {
           <Route path="/how-it-works" element={<HowItWorksPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
 
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
